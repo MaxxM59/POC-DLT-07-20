@@ -68,5 +68,5 @@ export function stringify(obj: object): string {
 }
 
 export function mock_key(consumers_number: number): string {
-  return `k-${Math.ceil(Math.random() * consumers_number)}`;
+  return `k-${Math.round(Math.random() * consumers_number)}`;
 }

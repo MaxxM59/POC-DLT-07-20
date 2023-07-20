@@ -81,5 +81,5 @@ function stringify(obj) {
     return JSON.stringify(obj, null, 2);
 }
 function mock_key(consumers_number) {
-    return `k-${Math.ceil(Math.random() * consumers_number)}`;
+    return `k-${Math.round(Math.random() * consumers_number)}`;
 }

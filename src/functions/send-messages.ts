@@ -14,12 +14,13 @@ export async function produce_messages(
 
   for (let i = 1; i <= config.messages.total_messages; i++) {
     const msg = `message-${i}`;
+    const ordering_key = config.messages.ordering_key ? mock_key(config.consumers.consumers_number) : undefined;
     await producer.send({
       data: Buffer.from(msg),
-      orderingKey: config.messages.ordering_key ? mock_key(config.consumers.consumers_number) : undefined,
-      partitionKey: config.messages.partition_key ? mock_key(config.consumers.consumers_number) : undefined,
+      orderingKey: ordering_key,
+      //  partitionKey: config.messages.partition_key ? mock_key(config.consumers.consumers_number) : undefined,
     });
-
+    print(`ORdering key for message : ${msg} => ${ordering_key}`);
     // Mock sub/unsub at half
     if (i === Math.ceil(config.messages.total_messages / 2)) {
       consumers = await mock_half(client, config, consumers);

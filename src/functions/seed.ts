@@ -56,7 +56,7 @@ export async function create_consumer(
   try {
     print(`Creating consumer ${consumer_name}`, CREATE_CONSUMER);
 
-    const sub_name = `POC-subscription-${consumer_name}`;
+    // const sub_name = `POC-subscription-${consumer_name}`;
     //const split = consumer_name.split('-');
 
     // const topic_name = `${config.topic_name}-partition-${split[split.length - 1]}`;
@@ -65,7 +65,7 @@ export async function create_consumer(
       ackTimeoutMs: config.consumers.ack_timeout,
       nAckRedeliverTimeoutMs: config.consumers.nack_timeout,
       topic: config.topic_name,
-      subscription: sub_name,
+      subscription: 'POC-subscription',
       subscriptionType: config.consumers.sub_type,
       subscriptionInitialPosition: config.consumers.intial_position,
       deadLetterPolicy: {
@@ -84,7 +84,7 @@ export async function create_consumer(
     });
 
     print(`Successfully created consumer ${consumer_name}`, CREATE_CONSUMER);
-    return { name: consumer_name, sub_name: sub_name, consumer: consumer };
+    return { name: consumer_name, sub_name: 'POC-subscription', consumer: consumer };
   } catch (e) {
     print_err(`Failed to create consumer ${consumer_name} :  ${e}`, CREATE_CONSUMER);
     throw e;

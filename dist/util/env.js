@@ -9,7 +9,8 @@ Object.defineProperty(exports, "parse_env", {
     }
 });
 async function parse_env() {
-    const topic_name = 'WS-topic-partitioned-2';
+    //   const topic_name = 'WS-topic-partitioned-2';
+    const topic_name = 'WS-topic-2';
     const topic_name_dlq = `${topic_name}-DLQ`;
     return {
         topic_name,
@@ -22,13 +23,13 @@ async function parse_env() {
             routing_mode: 'UseSinglePartition'
         },
         messages: {
-            total_messages: 5,
+            total_messages: 20,
             close_after_messages_sent: false,
             ordering_key: true,
-            partition_key: true
+            partition_key: false
         },
         consumers: {
-            consumers_number: 1,
+            consumers_number: 4,
             // Equal to 0 or >=10000
             ack_timeout: 10000,
             // Mandatory to enable retry
@@ -46,19 +47,19 @@ async function parse_env() {
             },
             mock: {
                 // Nack messages ending with odd number (eg: message-1)
-                nack: true,
+                nack: false,
                 // Acked if redelivery count === dead_letter.max_redelivery
-                ack_on_last_redelivery: true,
+                ack_on_last_redelivery: false,
                 // Add new consumer when half messages were sent
-                add_sub_half: true,
+                add_sub_half: false,
                 // Add new consumer when all messages were sent
-                add_sub_end: true,
+                add_sub_end: false,
                 // Unsub first consumer when half messages were sent
-                unsub_first_consumer_half: true,
+                unsub_first_consumer_half: false,
                 // Close first consumer when half messages were sent
                 close_first_consumer_half: false,
                 // Reopen consumer when all messages were sent
-                reopen_first_consumer_end: true,
+                reopen_first_consumer_end: false,
                 // Mock failover
                 mock_failover: false
             }

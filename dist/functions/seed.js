@@ -97,14 +97,14 @@ async function seed_consumers(client, config, consumers_number) {
 async function create_consumer(client, config, consumer_name) {
     try {
         (0, _helper.print)(`Creating consumer ${consumer_name}`, CREATE_CONSUMER);
-        const sub_name = `POC-subscription-${consumer_name}`;
+        // const sub_name = `POC-subscription-${consumer_name}`;
         //const split = consumer_name.split('-');
         // const topic_name = `${config.topic_name}-partition-${split[split.length - 1]}`;
         const consumer = await client.subscribe({
             ackTimeoutMs: config.consumers.ack_timeout,
             nAckRedeliverTimeoutMs: config.consumers.nack_timeout,
             topic: config.topic_name,
-            subscription: sub_name,
+            subscription: 'POC-subscription',
             subscriptionType: config.consumers.sub_type,
             subscriptionInitialPosition: config.consumers.intial_position,
             deadLetterPolicy: {
@@ -123,7 +123,7 @@ async function create_consumer(client, config, consumer_name) {
         (0, _helper.print)(`Successfully created consumer ${consumer_name}`, CREATE_CONSUMER);
         return {
             name: consumer_name,
-            sub_name: sub_name,
+            sub_name: 'POC-subscription',
             consumer: consumer
         };
     } catch (e) {

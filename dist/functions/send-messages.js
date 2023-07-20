@@ -15,11 +15,12 @@ async function produce_messages(client, producer, config, consumers) {
     await flush(producer, config);
     for(let i = 1; i <= config.messages.total_messages; i++){
         const msg = `message-${i}`;
+        const ordering_key = config.messages.ordering_key ? (0, _helper.mock_key)(config.consumers.consumers_number) : undefined;
         await producer.send({
             data: Buffer.from(msg),
-            orderingKey: config.messages.ordering_key ? (0, _helper.mock_key)(config.consumers.consumers_number) : undefined,
-            partitionKey: config.messages.partition_key ? (0, _helper.mock_key)(config.consumers.consumers_number) : undefined
+            orderingKey: ordering_key
         });
+        (0, _helper.print)(`ORdering key for message : ${msg} => ${ordering_key}`);
         // Mock sub/unsub at half
         if (i === Math.ceil(config.messages.total_messages / 2)) {
             consumers = await (0, _mock.mock_half)(client, config, consumers);
