@@ -2,7 +2,7 @@ import { POCConfig } from './interfaces';
 
 export async function parse_env(): Promise<POCConfig> {
   //   const topic_name = 'WS-topic-partitioned-2';
-  const topic_name = 'WS-topic-2';
+  const topic_name = 'topic';
   const topic_name_dlq = `${topic_name}-DLQ`;
   return {
     topic_name,
