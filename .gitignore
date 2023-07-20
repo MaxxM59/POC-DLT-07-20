@@ -1,0 +1,15 @@
+apidocs/
+build/
+node_modules/
+report/
+.idea
+.vscode
+*.tar.gz
+*.tgz
+pkg/linux/pulsar-cpp/
+pkg/mac/build-pulsar/
+lib/
+src/cert.pem
+*/dist
+*/dist*
+POC/dist
