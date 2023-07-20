@@ -28,7 +28,7 @@ async function parse_env() {
             partition_key: true
         },
         consumers: {
-            consumers_number: 2,
+            consumers_number: 1,
             // Equal to 0 or >=10000
             ack_timeout: 10000,
             // Mandatory to enable retry
@@ -54,9 +54,9 @@ async function parse_env() {
                 // Add new consumer when all messages were sent
                 add_sub_end: true,
                 // Unsub first consumer when half messages were sent
-                unsub_first_consumer_half: false,
+                unsub_first_consumer_half: true,
                 // Close first consumer when half messages were sent
-                close_first_consumer_half: true,
+                close_first_consumer_half: false,
                 // Reopen consumer when all messages were sent
                 reopen_first_consumer_end: true,
                 // Mock failover

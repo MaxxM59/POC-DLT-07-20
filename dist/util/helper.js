@@ -67,17 +67,15 @@ async function print_topic_partitons(client, config) {
     console.log('PARTITIONS TOPIC =>', await client.getPartitionsForTopic(config.topic_name));
     console.log('PARTITIONS DLT =>', await client.getPartitionsForTopic(config.consumers.dead_letter.dlq_topic_name));
 }
-function print(str) {
+function print(str, function_name) {
     const now = new Date();
-    console.log(`
-    [${format_time(now)}] -- ${str}
-    `);
+    // eslint-disable-next-line sonarjs/no-nested-template-literals
+    console.log(`\n[${format_time(now)}] -- ${function_name !== undefined ? `[${function_name}] -- ` : ''}${str}`);
 }
-function print_err(str) {
+function print_err(str, function_name) {
     const now = new Date();
-    console.error(`
-    [${format_time(now)}] -- ${str}
-    `);
+    // eslint-disable-next-line sonarjs/no-nested-template-literals
+    console.error(`\n[${format_time(now)}] -- ${function_name !== undefined ? `[${function_name}] -- ` : ''}${str}`);
 }
 function stringify(obj) {
     return JSON.stringify(obj, null, 2);

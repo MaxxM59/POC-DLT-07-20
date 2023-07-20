@@ -45,24 +45,18 @@ export async function print_topic_partitons(client: Pulsar.Client, config: POCCo
   console.log('PARTITIONS DLT =>', await client.getPartitionsForTopic(config.consumers.dead_letter.dlq_topic_name));
 }
 
-export function print(str: string): void {
+export function print(str: string, function_name?: string): void {
   const now = new Date();
 
-  console.log(
-    `
-    [${format_time(now)}] -- ${str}
-    `
-  );
+  // eslint-disable-next-line sonarjs/no-nested-template-literals
+  console.log(`\n[${format_time(now)}] -- ${function_name !== undefined ? `[${function_name}] -- ` : ''}${str}`);
 }
 
-export function print_err(str: string): void {
+export function print_err(str: string, function_name?: string): void {
   const now = new Date();
 
-  console.error(
-    `
-    [${format_time(now)}] -- ${str}
-    `
-  );
+  // eslint-disable-next-line sonarjs/no-nested-template-literals
+  console.error(`\n[${format_time(now)}] -- ${function_name !== undefined ? `[${function_name}] -- ` : ''}${str}`);
 }
 
 export function stringify(obj: object): string {
