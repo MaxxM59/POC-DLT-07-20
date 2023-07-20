@@ -82,6 +82,6 @@ export async function create_consumer(
     return { name: consumer_name, sub_name: sub_name, consumer: consumer };
   } catch (e) {
     print_err(`Failed to create consumer ${consumer_name} :  ${e}`);
-    throw Error(e);
+    throw e;
   }
 }

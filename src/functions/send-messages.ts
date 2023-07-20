@@ -43,7 +43,9 @@ async function flush(producer: Pulsar.Producer, config: POCConfig): Promise<void
     // Assert no msg
     await producer.flush();
   } catch (e) {
-    print_err(e);
+    if (e instanceof Error) {
+      print_err(e.message);
+    }
     throw e;
   }
 }

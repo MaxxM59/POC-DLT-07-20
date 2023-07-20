@@ -126,6 +126,6 @@ async function create_consumer(client, config, consumer_name) {
         };
     } catch (e) {
         (0, _helper.print_err)(`Failed to create consumer ${consumer_name} :  ${e}`);
-        throw Error(e);
+        throw e;
     }
 }

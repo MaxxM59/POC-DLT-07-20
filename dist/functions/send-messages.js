@@ -38,7 +38,9 @@ async function flush(producer, config) {
         // Assert no msg
         await producer.flush();
     } catch (e) {
-        (0, _helper.print_err)(e);
+        if (e instanceof Error) {
+            (0, _helper.print_err)(e.message);
+        }
         throw e;
     }
 }
