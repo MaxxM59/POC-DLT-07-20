@@ -10,7 +10,7 @@ Object.defineProperty(exports, "parse_env", {
 });
 async function parse_env() {
     //   const topic_name = 'WS-topic-partitioned-2';
-    const topic_name = 'WS-topic-2';
+    const topic_name = 'topic1';
     const topic_name_dlq = `${topic_name}-DLQ`;
     return {
         topic_name,
@@ -23,9 +23,9 @@ async function parse_env() {
             routing_mode: 'UseSinglePartition'
         },
         messages: {
-            total_messages: 20,
+            total_messages: 10,
             close_after_messages_sent: false,
-            ordering_key: true,
+            ordering_key: false,
             partition_key: false
         },
         consumers: {
@@ -51,7 +51,7 @@ async function parse_env() {
                 // Acked if redelivery count === dead_letter.max_redelivery
                 ack_on_last_redelivery: false,
                 // Add new consumer when half messages were sent
-                add_sub_half: false,
+                add_sub_half: true,
                 // Add new consumer when all messages were sent
                 add_sub_end: false,
                 // Unsub first consumer when half messages were sent

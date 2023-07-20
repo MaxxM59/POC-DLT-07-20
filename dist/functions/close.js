@@ -11,7 +11,7 @@ Object.defineProperty(exports, "close", {
 const _helper = require("../util/helper");
 const CLOSE = 'Close';
 async function close(producer, consumers, client) {
-    await (0, _helper.sleep)(5000, 'Closing app');
+    await (0, _helper.sleep)(5000, 'CLOSE', 'Closing app');
     (0, _helper.print)(`Closing instances after 5s`, CLOSE);
     try {
         await producer.flush();

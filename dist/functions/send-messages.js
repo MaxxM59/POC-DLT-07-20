@@ -20,7 +20,9 @@ async function produce_messages(client, producer, config, consumers) {
             data: Buffer.from(msg),
             orderingKey: ordering_key
         });
-        (0, _helper.print)(`ORdering key for message : ${msg} => ${ordering_key}`);
+        if (ordering_key !== undefined) {
+            (0, _helper.print)(`Ordering key for message : ${msg} => ${ordering_key}`);
+        }
         // Mock sub/unsub at half
         if (i === Math.ceil(config.messages.total_messages / 2)) {
             consumers = await (0, _mock.mock_half)(client, config, consumers);

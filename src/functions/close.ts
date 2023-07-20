@@ -8,7 +8,7 @@ export async function close(
   consumers: SeededConsumer[],
   client: Pulsar.Client
 ): Promise<void> {
-  await sleep(5000, 'Closing app');
+  await sleep(5000, 'CLOSE', 'Closing app');
   print(`Closing instances after 5s`, CLOSE);
   try {
     await producer.flush();

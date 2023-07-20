@@ -16,7 +16,7 @@ export async function mock_nack(
 }
 
 // Sleep
-export async function sleep(ms: number, message?: string): Promise<void> {
+export async function sleep(ms: number, function_name: string, message?: string): Promise<void> {
   return new Promise(resolve => {
     print(`${message} -- Sleeping for ${ms}ms...`);
     setTimeout(resolve, ms);

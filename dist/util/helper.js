@@ -42,7 +42,7 @@ async function mock_nack(message, max_redelivery, ack_on_last_redelivery) {
         return parseInt(split[split.length - 1], 10) % 2 !== 0;
     }
 }
-async function sleep(ms, message) {
+async function sleep(ms, function_name, message) {
     return new Promise((resolve)=>{
         print(`${message} -- Sleeping for ${ms}ms...`);
         setTimeout(resolve, ms);
