@@ -92,7 +92,7 @@ function seed_consumers(client, config, consumers_number) {
                     return [4 /*yield*/, create_consumer(client, config, name_1)];
                 case 2:
                     consumer = _a.sent();
-                    CONSUMERS.push({ name: name_1, consumer: consumer });
+                    CONSUMERS.push(consumer);
                     _a.label = 3;
                 case 3:
                     i++;
@@ -105,19 +105,21 @@ function seed_consumers(client, config, consumers_number) {
 exports.seed_consumers = seed_consumers;
 function create_consumer(client, config, consumer_name) {
     return __awaiter(this, void 0, void 0, function () {
-        var consumer, e_1;
+        var sub_name, consumer, e_1;
         var _this = this;
         return __generator(this, function (_a) {
             switch (_a.label) {
                 case 0:
                     _a.trys.push([0, 2, , 3]);
                     (0, helper_1.print)("Creating consumer ".concat(consumer_name));
+                    sub_name = "POC-subscription-".concat(consumer_name);
                     return [4 /*yield*/, client.subscribe({
                             ackTimeoutMs: config.consumers.ack_timeout,
                             nAckRedeliverTimeoutMs: config.consumers.nack_timeout,
                             topic: config.topic_name,
-                            subscription: "POC-subscription-".concat(consumer_name),
-                            subscriptionType: 'KeyShared',
+                            subscription: sub_name,
+                            subscriptionType: config.consumers.sub_type,
+                            subscriptionInitialPosition: config.consumers.intial_position,
                             deadLetterPolicy: {
                                 deadLetterTopic: config.consumers.dead_letter.dlq_topic_name,
                                 maxRedeliverCount: config.consumers.dead_letter.max_redelivery,
@@ -127,13 +129,14 @@ function create_consumer(client, config, consumer_name) {
                             listener: function (message, consumer) { return __awaiter(_this, void 0, void 0, function () {
                                 return __generator(this, function (_a) {
                                     switch (_a.label) {
-                                        case 0: 
-                                        // await print_topic_partitons(client, config.producer.topic_name);
-                                        // await print_topic_partitons(client, config.producer.dlq_topic_name);
-                                        return [4 /*yield*/, (0, receive_message_1.handle_message)(message, consumer, consumer_name, config)];
+                                        case 0:
+                                            if (!config.consumers.print_partitions) return [3 /*break*/, 2];
+                                            return [4 /*yield*/, (0, helper_1.print_topic_partitons)(client, config)];
                                         case 1:
-                                            // await print_topic_partitons(client, config.producer.topic_name);
-                                            // await print_topic_partitons(client, config.producer.dlq_topic_name);
+                                            _a.sent();
+                                            _a.label = 2;
+                                        case 2: return [4 /*yield*/, (0, receive_message_1.handle_message)(message, consumer, consumer_name, config)];
+                                        case 3:
                                             _a.sent();
                                             return [2 /*return*/];
                                     }
@@ -143,7 +146,7 @@ function create_consumer(client, config, consumer_name) {
                 case 1:
                     consumer = _a.sent();
                     (0, helper_1.print)("Successfully created consumer ".concat(consumer_name));
-                    return [2 /*return*/, consumer];
+                    return [2 /*return*/, { name: consumer_name, sub_name: sub_name, consumer: consumer }];
                 case 2:
                     e_1 = _a.sent();
                     (0, helper_1.print_err)("Failed to create consumer ".concat(consumer_name, " :  ").concat(e_1));

@@ -36,73 +36,58 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
     }
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.produce_messages = void 0;
+exports.close = void 0;
 var helper_1 = require("../util/helper");
-var close_1 = require("./close");
-var mock_1 = require("./mock");
-function produce_messages(client, producer, config, consumers) {
-    return __awaiter(this, void 0, void 0, function () {
-        var i, msg;
-        return __generator(this, function (_a) {
-            switch (_a.label) {
-                case 0: return [4 /*yield*/, flush(producer, config)];
-                case 1:
-                    _a.sent();
-                    i = 1;
-                    _a.label = 2;
-                case 2:
-                    if (!(i <= config.messages.total_messages)) return [3 /*break*/, 6];
-                    msg = "message-".concat(i);
-                    return [4 /*yield*/, producer.send({
-                            data: Buffer.from(msg),
-                            orderingKey: config.messages.ordering_key ? (0, helper_1.mock_key)(config.consumers.consumers_number) : undefined,
-                            partitionKey: config.messages.partition_key ? (0, helper_1.mock_key)(config.consumers.consumers_number) : undefined,
-                        })];
-                case 3:
-                    _a.sent();
-                    if (!(i === Math.ceil(config.messages.total_messages / 2))) return [3 /*break*/, 5];
-                    return [4 /*yield*/, (0, mock_1.mock_half)(client, config, consumers)];
-                case 4:
-                    consumers = _a.sent();
-                    _a.label = 5;
-                case 5:
-                    i++;
-                    return [3 /*break*/, 2];
-                case 6: return [4 /*yield*/, (0, mock_1.mock_end)(client, config, consumers)];
-                case 7:
-                    // Mock sub/unsub at end
-                    consumers = _a.sent();
-                    if (!config.messages.close_after_messages_sent) return [3 /*break*/, 9];
-                    return [4 /*yield*/, (0, close_1.close)(producer, consumers, client)];
-                case 8:
-                    _a.sent();
-                    _a.label = 9;
-                case 9: return [2 /*return*/];
-            }
-        });
-    });
-}
-exports.produce_messages = produce_messages;
-function flush(producer, config) {
+function close(producer, consumers, client) {
     return __awaiter(this, void 0, void 0, function () {
         var e_1;
+        var _this = this;
         return __generator(this, function (_a) {
             switch (_a.label) {
-                case 0:
-                    _a.trys.push([0, 2, , 3]);
-                    (0, helper_1.print)("[".concat(producer.getProducerName(), "] Cleaning producer before sending ").concat(config.messages.total_messages, " messages"));
-                    // Assert no msg
-                    return [4 /*yield*/, producer.flush()];
+                case 0: return [4 /*yield*/, (0, helper_1.sleep)(5000, 'Closing app')];
                 case 1:
-                    // Assert no msg
                     _a.sent();
-                    return [3 /*break*/, 3];
+                    (0, helper_1.print)("Closing instances after 5s");
+                    _a.label = 2;
                 case 2:
+                    _a.trys.push([2, 7, , 8]);
+                    return [4 /*yield*/, producer.flush()];
+                case 3:
+                    _a.sent();
+                    (0, helper_1.print)("Flushed producer");
+                    return [4 /*yield*/, producer.close()];
+                case 4:
+                    _a.sent();
+                    (0, helper_1.print)("Closed producer");
+                    return [4 /*yield*/, Promise.all(consumers.map(function (c) { return __awaiter(_this, void 0, void 0, function () {
+                            return __generator(this, function (_a) {
+                                switch (_a.label) {
+                                    case 0:
+                                        if (!c.consumer.isConnected()) return [3 /*break*/, 2];
+                                        return [4 /*yield*/, c.consumer.close()];
+                                    case 1:
+                                        _a.sent();
+                                        _a.label = 2;
+                                    case 2: return [2 /*return*/];
+                                }
+                            });
+                        }); }))];
+                case 5:
+                    _a.sent();
+                    (0, helper_1.print)("Closed ".concat(consumers.length > 1 ? 'consumers' : 'consumer'));
+                    return [4 /*yield*/, client.close()];
+                case 6:
+                    _a.sent();
+                    (0, helper_1.print)("Closed client");
+                    process.exit(0);
+                    return [3 /*break*/, 8];
+                case 7:
                     e_1 = _a.sent();
                     (0, helper_1.print_err)(e_1);
-                    throw e_1;
-                case 3: return [2 /*return*/];
+                    return [3 /*break*/, 8];
+                case 8: return [2 /*return*/];
             }
         });
     });
 }
+exports.close = close;

@@ -49,13 +49,13 @@ function handle_message(message, consumer, consumer_name, config) {
                         (0, helper_1.print)("[".concat(consumer_name, "] No message !"));
                         return [2 /*return*/];
                     }
-                    (0, helper_1.print)("[".concat(consumer_name, "] Handling message: ").concat(message.getData().toString(), " \n              => Delivery : ").concat(message.getRedeliveryCount(), "/").concat(config.consumers.dead_letter.max_redelivery, "\n              => Topic: ").concat(message.getTopicName(), "\n              => Partition: ").concat(message.getPartitionKey()));
+                    (0, helper_1.print)("[".concat(consumer_name, "] Handling message: ").concat(message.getData().toString(), " \n                            => Delivery count: ").concat(message.getRedeliveryCount(), "/").concat(config.consumers.dead_letter.max_redelivery, "\n                            => Topic name: ").concat(message.getTopicName(), "\n                            => Partition key: ").concat(message.getPartitionKey()));
                     _b.label = 1;
                 case 1:
                     _b.trys.push([1, 7, , 8]);
                     _a = config.consumers.mock.nack;
                     if (!_a) return [3 /*break*/, 3];
-                    return [4 /*yield*/, (0, helper_1.mock_nack)(message, config.consumers.dead_letter.max_redelivery)];
+                    return [4 /*yield*/, (0, helper_1.mock_nack)(message, config.consumers.dead_letter.max_redelivery, config.consumers.mock.ack_on_last_redelivery)];
                 case 2:
                     _a = (_b.sent());
                     _b.label = 3;

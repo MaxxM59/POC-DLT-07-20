@@ -36,14 +36,14 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
     }
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.mock_partition_key = exports.stringify = exports.print_err = exports.print = exports.print_topic_partitons = exports.format_time = exports.make_dlq_name = exports.sleep = exports.mock_nack = void 0;
+exports.mock_key = exports.stringify = exports.print_err = exports.print = exports.print_topic_partitons = exports.format_time = exports.sleep = exports.mock_nack = void 0;
 // Way to get nack based on % 2
-function mock_nack(message, max_redelivery) {
+function mock_nack(message, max_redelivery, ack_on_last_redelivery) {
     return __awaiter(this, void 0, void 0, function () {
         var split;
         return __generator(this, function (_a) {
             split = message.getData().toString().split('-');
-            if (message.getRedeliveryCount() === max_redelivery) {
+            if (message.getRedeliveryCount() === max_redelivery && ack_on_last_redelivery) {
                 return [2 /*return*/, false];
             }
             else {
@@ -55,21 +55,17 @@ function mock_nack(message, max_redelivery) {
 }
 exports.mock_nack = mock_nack;
 // Sleep
-function sleep(ms) {
+function sleep(ms, message) {
     return __awaiter(this, void 0, void 0, function () {
         return __generator(this, function (_a) {
             return [2 /*return*/, new Promise(function (resolve) {
-                    console.log("\n\nSleeping for ".concat(ms, "ms...\n\n"));
+                    print("".concat(message, " -- Sleeping for ").concat(ms, "ms..."));
                     setTimeout(resolve, ms);
                 })];
         });
     });
 }
 exports.sleep = sleep;
-function make_dlq_name(name) {
-    return "".concat(name, "-DLQ");
-}
-exports.make_dlq_name = make_dlq_name;
 function format_time(time) {
     if (typeof time === 'number') {
         var minutes = Math.floor(time / 60000);
@@ -88,17 +84,22 @@ function format_time(time) {
     }
 }
 exports.format_time = format_time;
-function print_topic_partitons(client, topic) {
+function print_topic_partitons(client, config) {
     return __awaiter(this, void 0, void 0, function () {
-        var _a, _b, _c;
-        return __generator(this, function (_d) {
-            switch (_d.label) {
+        var _a, _b, _c, _d, _e, _f;
+        return __generator(this, function (_g) {
+            switch (_g.label) {
                 case 0:
                     _b = (_a = console).log;
-                    _c = ['PARTITIONS =>'];
-                    return [4 /*yield*/, client.getPartitionsForTopic(topic)];
+                    _c = ['PARTITIONS TOPIC =>'];
+                    return [4 /*yield*/, client.getPartitionsForTopic(config.topic_name)];
                 case 1:
-                    _b.apply(_a, _c.concat([_d.sent()]));
+                    _b.apply(_a, _c.concat([_g.sent()]));
+                    _e = (_d = console).log;
+                    _f = ['PARTITIONS DLT =>'];
+                    return [4 /*yield*/, client.getPartitionsForTopic(config.consumers.dead_letter.dlq_topic_name)];
+                case 2:
+                    _e.apply(_d, _f.concat([_g.sent()]));
                     return [2 /*return*/];
             }
         });
@@ -119,7 +120,7 @@ function stringify(obj) {
     return JSON.stringify(obj, null, 2);
 }
 exports.stringify = stringify;
-function mock_partition_key(consumers_number) {
+function mock_key(consumers_number) {
     return "k-".concat(Math.ceil(Math.random() * consumers_number));
 }
-exports.mock_partition_key = mock_partition_key;
+exports.mock_key = mock_key;

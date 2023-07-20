@@ -37,37 +37,60 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.parse_env = void 0;
-var helper_1 = require("./helper");
 function parse_env() {
     return __awaiter(this, void 0, void 0, function () {
-        var topic_name;
+        var topic_name, topic_name_dlq;
         return __generator(this, function (_a) {
             topic_name = 'POC-topic-partitioned';
+            topic_name_dlq = 'POC-topic-partitioned-DLQ';
             return [2 /*return*/, {
                     topic_name: topic_name,
                     producer: {
                         name: 'POC-producer',
-                        send_timeout_ms: 30000,
+                        send_timeout_ms: 10000,
                         hashing_scheme: 'Murmur3_32Hash',
-                        routing_mode: 'RoundRobinDistribution',
+                        routing_mode: 'UseSinglePartition',
                     },
                     messages: {
-                        total_messages: 5,
-                        produce_messages_batch: 10,
+                        total_messages: 10,
+                        close_after_messages_sent: false,
+                        ordering_key: false,
+                        partition_key: false,
                     },
                     consumers: {
-                        consumers_number: 2,
+                        consumers_number: 1,
+                        // Equal to 0 or >=10000
                         ack_timeout: 10000,
+                        // Mandatory to enable retry
                         nack_timeout: 1000,
+                        //   'Exclusive' |  'Shared' |  'KeyShared' |  'Failover';
+                        sub_type: 'Failover',
+                        //   'Latest' |  'Earliest' ;
+                        intial_position: 'Latest',
+                        // Print topic partitions
+                        print_partitions: false,
                         dead_letter: {
-                            max_redelivery: 2,
-                            dlq_topic_name: (0, helper_1.make_dlq_name)(topic_name),
+                            // Max redelivery (first delivery = 0/max_redelivery)
+                            max_redelivery: 1,
+                            dlq_topic_name: topic_name_dlq,
                         },
                         mock: {
+                            // Nack messages ending with odd number (eg: message-1)
                             nack: true,
-                            add_sub_half: true,
-                            add_sub_end: true,
-                            unsub_half: true,
+                            // Acked if redelivery count === dead_letter.max_redelivery
+                            ack_on_last_redelivery: true,
+                            // Add new consumer when half messages were sent
+                            add_sub_half: false,
+                            // Add new consumer when all messages were sent
+                            add_sub_end: false,
+                            // Unsub first consumer when half messages were sent
+                            unsub_first_consumer_half: false,
+                            // Close first consumer when half messages were sent
+                            close_first_consumer_half: false,
+                            // Reopen consumer when all messages were sent
+                            reopen_first_consumer_end: false,
+                            // Mock failover
+                            mock_failover: true,
                         },
                     },
                 }];

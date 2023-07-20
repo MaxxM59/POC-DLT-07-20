@@ -1,6 +1,6 @@
 import * as Pulsar from 'pulsar-client';
 
-import { print, print_err } from '../util/helper';
+import { print, print_err, sleep } from '../util/helper';
 import { SeededConsumer } from '../util/interfaces';
 
 export async function close(
@@ -8,6 +8,8 @@ export async function close(
   consumers: SeededConsumer[],
   client: Pulsar.Client
 ): Promise<void> {
+  await sleep(5000, 'Closing app');
+  print(`Closing instances after 5s`);
   try {
     await producer.flush();
     print(`Flushed producer`);
@@ -17,7 +19,9 @@ export async function close(
 
     await Promise.all(
       consumers.map(async c => {
-        await c.consumer.close();
+        if (c.consumer.isConnected()) {
+          await c.consumer.close();
+        }
       })
     );
 
@@ -25,6 +29,7 @@ export async function close(
 
     await client.close();
     print(`Closed client`);
+    process.exit(0);
   } catch (e) {
     print_err(e);
   }

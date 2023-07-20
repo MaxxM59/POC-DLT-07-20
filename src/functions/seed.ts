@@ -1,6 +1,6 @@
 import * as Pulsar from 'pulsar-client';
 
-import { print, print_err } from '../util/helper';
+import { print, print_err, print_topic_partitons } from '../util/helper';
 import { handle_message } from './receive-message';
 import { POCConfig, SeededConsumer } from '../util/interfaces';
 // Init pulsar client
@@ -38,7 +38,7 @@ export async function seed_consumers(
   for (let i = 1; i <= consumers_number; i++) {
     const name = `CONSUMER-${i}`;
     const consumer = await create_consumer(client, config, name);
-    CONSUMERS.push({ name: name, consumer: consumer });
+    CONSUMERS.push(consumer);
   }
   return CONSUMERS;
 }
@@ -47,16 +47,19 @@ export async function create_consumer(
   client: Pulsar.Client,
   config: POCConfig,
   consumer_name: string
-): Promise<Pulsar.Consumer> {
+): Promise<SeededConsumer> {
   try {
     print(`Creating consumer ${consumer_name}`);
+
+    const sub_name = `POC-subscription-${consumer_name}`;
 
     const consumer = await client.subscribe({
       ackTimeoutMs: config.consumers.ack_timeout,
       nAckRedeliverTimeoutMs: config.consumers.nack_timeout,
       topic: config.topic_name,
-      subscription: `POC-subscription-${consumer_name}`,
-      subscriptionType: 'KeyShared',
+      subscription: sub_name,
+      subscriptionType: config.consumers.sub_type,
+      subscriptionInitialPosition: config.consumers.intial_position,
       deadLetterPolicy: {
         deadLetterTopic: config.consumers.dead_letter.dlq_topic_name,
         maxRedeliverCount: config.consumers.dead_letter.max_redelivery,
@@ -65,14 +68,15 @@ export async function create_consumer(
 
       // eslint-disable-next-line @typescript-eslint/no-misused-promises
       listener: async (message, consumer): Promise<void> => {
-        // await print_topic_partitons(client, config.producer.topic_name);
-        // await print_topic_partitons(client, config.producer.dlq_topic_name);
+        if (config.consumers.print_partitions) {
+          await print_topic_partitons(client, config);
+        }
         await handle_message(message, consumer, consumer_name, config);
       },
     });
 
     print(`Successfully created consumer ${consumer_name}`);
-    return consumer;
+    return { name: consumer_name, sub_name: sub_name, consumer: consumer };
   } catch (e) {
     print_err(`Failed to create consumer ${consumer_name} :  ${e}`);
     throw Error(e);

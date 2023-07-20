@@ -36,73 +36,64 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
     }
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.produce_messages = void 0;
-var helper_1 = require("../util/helper");
-var close_1 = require("./close");
-var mock_1 = require("./mock");
-function produce_messages(client, producer, config, consumers) {
+exports.mock_end = exports.mock_half = void 0;
+var mock_helper_1 = require("./mock-helper");
+function mock_half(client, config, consumers) {
     return __awaiter(this, void 0, void 0, function () {
-        var i, msg;
-        return __generator(this, function (_a) {
-            switch (_a.label) {
-                case 0: return [4 /*yield*/, flush(producer, config)];
-                case 1:
-                    _a.sent();
-                    i = 1;
-                    _a.label = 2;
-                case 2:
-                    if (!(i <= config.messages.total_messages)) return [3 /*break*/, 6];
-                    msg = "message-".concat(i);
-                    return [4 /*yield*/, producer.send({
-                            data: Buffer.from(msg),
-                            orderingKey: config.messages.ordering_key ? (0, helper_1.mock_key)(config.consumers.consumers_number) : undefined,
-                            partitionKey: config.messages.partition_key ? (0, helper_1.mock_key)(config.consumers.consumers_number) : undefined,
-                        })];
-                case 3:
-                    _a.sent();
-                    if (!(i === Math.ceil(config.messages.total_messages / 2))) return [3 /*break*/, 5];
-                    return [4 /*yield*/, (0, mock_1.mock_half)(client, config, consumers)];
-                case 4:
-                    consumers = _a.sent();
-                    _a.label = 5;
-                case 5:
-                    i++;
-                    return [3 /*break*/, 2];
-                case 6: return [4 /*yield*/, (0, mock_1.mock_end)(client, config, consumers)];
-                case 7:
-                    // Mock sub/unsub at end
-                    consumers = _a.sent();
-                    if (!config.messages.close_after_messages_sent) return [3 /*break*/, 9];
-                    return [4 /*yield*/, (0, close_1.close)(producer, consumers, client)];
-                case 8:
-                    _a.sent();
-                    _a.label = 9;
-                case 9: return [2 /*return*/];
-            }
-        });
-    });
-}
-exports.produce_messages = produce_messages;
-function flush(producer, config) {
-    return __awaiter(this, void 0, void 0, function () {
-        var e_1;
         return __generator(this, function (_a) {
             switch (_a.label) {
                 case 0:
-                    _a.trys.push([0, 2, , 3]);
-                    (0, helper_1.print)("[".concat(producer.getProducerName(), "] Cleaning producer before sending ").concat(config.messages.total_messages, " messages"));
-                    // Assert no msg
-                    return [4 /*yield*/, producer.flush()];
+                    if (config.consumers.mock.unsub_first_consumer_half && config.consumers.mock.close_first_consumer_half) {
+                        throw Error("Cannot unsubscribe and close at the same time");
+                    }
+                    if (!config.consumers.mock.unsub_first_consumer_half) return [3 /*break*/, 2];
+                    return [4 /*yield*/, (0, mock_helper_1.unsub_first_consumer)(consumers)];
                 case 1:
-                    // Assert no msg
                     _a.sent();
-                    return [3 /*break*/, 3];
+                    _a.label = 2;
                 case 2:
-                    e_1 = _a.sent();
-                    (0, helper_1.print_err)(e_1);
-                    throw e_1;
-                case 3: return [2 /*return*/];
+                    if (!config.consumers.mock.close_first_consumer_half) return [3 /*break*/, 4];
+                    return [4 /*yield*/, (0, mock_helper_1.close_first_consumer)(consumers)];
+                case 3:
+                    _a.sent();
+                    _a.label = 4;
+                case 4:
+                    if (!config.consumers.mock.add_sub_half) return [3 /*break*/, 6];
+                    return [4 /*yield*/, (0, mock_helper_1.add_consumer)(client, config, consumers, true)];
+                case 5:
+                    consumers = _a.sent();
+                    _a.label = 6;
+                case 6:
+                    if (!config.consumers.mock.mock_failover) return [3 /*break*/, 8];
+                    return [4 /*yield*/, (0, mock_helper_1.mock_failover)(client, config, consumers, true)];
+                case 7:
+                    consumers = _a.sent();
+                    _a.label = 8;
+                case 8: return [2 /*return*/, consumers];
             }
         });
     });
 }
+exports.mock_half = mock_half;
+function mock_end(client, config, consumers) {
+    return __awaiter(this, void 0, void 0, function () {
+        return __generator(this, function (_a) {
+            switch (_a.label) {
+                case 0:
+                    if (!config.consumers.mock.add_sub_end) return [3 /*break*/, 2];
+                    return [4 /*yield*/, (0, mock_helper_1.add_consumer)(client, config, consumers, false)];
+                case 1:
+                    consumers = _a.sent();
+                    _a.label = 2;
+                case 2:
+                    if (!config.consumers.mock.reopen_first_consumer_end) return [3 /*break*/, 4];
+                    return [4 /*yield*/, (0, mock_helper_1.resub_first_consumer)(client, config, consumers)];
+                case 3:
+                    _a.sent();
+                    _a.label = 4;
+                case 4: return [2 /*return*/, consumers];
+            }
+        });
+    });
+}
+exports.mock_end = mock_end;

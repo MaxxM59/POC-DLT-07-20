@@ -2,39 +2,49 @@ import * as Pulsar from 'pulsar-client';
 
 export interface SeededConsumer {
   name: string;
+  sub_name: string;
   consumer: Pulsar.Consumer;
 }
 export interface POCConfig {
   topic_name: string;
   producer: ProducerConfig;
   messages: MessageConfig;
-  consumers: ConsumersConfig;
+  consumers: ConsumerConfig;
 }
 
-export interface ProducerConfig {
+interface ProducerConfig {
   name: string;
   send_timeout_ms: number;
   hashing_scheme: Pulsar.HashingScheme;
   routing_mode: Pulsar.MessageRoutingMode;
 }
 
-export interface MessageConfig {
+interface MessageConfig {
   total_messages: number;
-  produce_messages_batch: number;
+  close_after_messages_sent: boolean;
+  ordering_key: boolean;
+  partition_key: boolean;
 }
 
-export interface ConsumersConfig {
+interface ConsumerConfig {
   consumers_number: number;
   nack_timeout: number;
   ack_timeout: number;
+  sub_type: Pulsar.SubscriptionType;
+  intial_position: Pulsar.InitialPosition;
+  print_partitions: boolean;
   dead_letter: {
     dlq_topic_name: string;
     max_redelivery: number;
   };
   mock: {
     nack: boolean;
+    ack_on_last_redelivery: boolean;
     add_sub_half: boolean;
     add_sub_end: boolean;
-    unsub_half: boolean;
+    unsub_first_consumer_half: boolean;
+    close_first_consumer_half: boolean;
+    reopen_first_consumer_end: boolean;
+    mock_failover: boolean;
   };
 }
