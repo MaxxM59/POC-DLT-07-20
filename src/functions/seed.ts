@@ -52,6 +52,9 @@ export async function create_consumer(
     print(`Creating consumer ${consumer_name}`);
 
     const sub_name = `POC-subscription-${consumer_name}`;
+    //const split = consumer_name.split('-');
+
+    // const topic_name = `${config.topic_name}-partition-${split[split.length - 1]}`;
 
     const consumer = await client.subscribe({
       ackTimeoutMs: config.consumers.ack_timeout,

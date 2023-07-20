@@ -41,36 +41,38 @@ function parse_env() {
     return __awaiter(this, void 0, void 0, function () {
         var topic_name, topic_name_dlq;
         return __generator(this, function (_a) {
-            topic_name = 'POC-topic-partitioned';
-            topic_name_dlq = 'POC-topic-partitioned-DLQ';
+            topic_name = 'WS-topic-partitioned-2';
+            topic_name_dlq = "".concat(topic_name, "-DLQ");
             return [2 /*return*/, {
                     topic_name: topic_name,
                     producer: {
                         name: 'POC-producer',
                         send_timeout_ms: 10000,
+                        //   'Murmur3_32Hash' |  'BoostHash' |  'JavaStringHash';
                         hashing_scheme: 'Murmur3_32Hash',
+                        //   'UseSinglePartition' |  'RoundRobinDistribution' |  'CustomPartition';
                         routing_mode: 'UseSinglePartition',
                     },
                     messages: {
-                        total_messages: 10,
+                        total_messages: 1000,
                         close_after_messages_sent: false,
-                        ordering_key: false,
+                        ordering_key: true,
                         partition_key: false,
                     },
                     consumers: {
-                        consumers_number: 1,
+                        consumers_number: 2,
                         // Equal to 0 or >=10000
                         ack_timeout: 10000,
                         // Mandatory to enable retry
                         nack_timeout: 1000,
                         //   'Exclusive' |  'Shared' |  'KeyShared' |  'Failover';
-                        sub_type: 'Failover',
+                        sub_type: 'KeyShared',
                         //   'Latest' |  'Earliest' ;
                         intial_position: 'Latest',
                         // Print topic partitions
                         print_partitions: false,
                         dead_letter: {
-                            // Max redelivery (first delivery = 0/max_redelivery)
+                            // (first delivery = 0/max_redelivery)
                             max_redelivery: 1,
                             dlq_topic_name: topic_name_dlq,
                         },
@@ -80,17 +82,17 @@ function parse_env() {
                             // Acked if redelivery count === dead_letter.max_redelivery
                             ack_on_last_redelivery: true,
                             // Add new consumer when half messages were sent
-                            add_sub_half: false,
+                            add_sub_half: true,
                             // Add new consumer when all messages were sent
-                            add_sub_end: false,
+                            add_sub_end: true,
                             // Unsub first consumer when half messages were sent
-                            unsub_first_consumer_half: false,
+                            unsub_first_consumer_half: true,
                             // Close first consumer when half messages were sent
                             close_first_consumer_half: false,
                             // Reopen consumer when all messages were sent
-                            reopen_first_consumer_end: false,
+                            reopen_first_consumer_end: true,
                             // Mock failover
-                            mock_failover: true,
+                            mock_failover: false,
                         },
                     },
                 }];
