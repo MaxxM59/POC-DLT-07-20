@@ -17,7 +17,7 @@ export async function parse_env(): Promise<POCConfig> {
       total_messages: 5,
       close_after_messages_sent: false,
       ordering_key: true,
-      partition_key: false,
+      partition_key: true,
     },
     consumers: {
       consumers_number: 2,
@@ -46,9 +46,9 @@ export async function parse_env(): Promise<POCConfig> {
         // Add new consumer when all messages were sent
         add_sub_end: true,
         // Unsub first consumer when half messages were sent
-        unsub_first_consumer_half: true,
+        unsub_first_consumer_half: false,
         // Close first consumer when half messages were sent
-        close_first_consumer_half: false,
+        close_first_consumer_half: true,
         // Reopen consumer when all messages were sent
         reopen_first_consumer_end: true,
         // Mock failover
