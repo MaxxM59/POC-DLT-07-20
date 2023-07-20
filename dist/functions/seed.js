@@ -36,7 +36,7 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
     }
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.close = exports.create_consumer = exports.seed_consumers = exports.create_producer = exports.init_client = void 0;
+exports.create_consumer = exports.seed_consumers = exports.create_producer = exports.init_client = void 0;
 var Pulsar = require("pulsar-client");
 var helper_1 = require("../util/helper");
 var receive_message_1 = require("./receive-message");
@@ -154,47 +154,3 @@ function create_consumer(client, config, consumer_name) {
     });
 }
 exports.create_consumer = create_consumer;
-function close(producer, consumers, client) {
-    return __awaiter(this, void 0, void 0, function () {
-        var e_2;
-        var _this = this;
-        return __generator(this, function (_a) {
-            switch (_a.label) {
-                case 0:
-                    _a.trys.push([0, 5, , 6]);
-                    return [4 /*yield*/, producer.flush()];
-                case 1:
-                    _a.sent();
-                    (0, helper_1.print)("Flushed producer");
-                    return [4 /*yield*/, producer.close()];
-                case 2:
-                    _a.sent();
-                    (0, helper_1.print)("Closed producer");
-                    return [4 /*yield*/, Promise.all(consumers.map(function (c) { return __awaiter(_this, void 0, void 0, function () {
-                            return __generator(this, function (_a) {
-                                switch (_a.label) {
-                                    case 0: return [4 /*yield*/, c.consumer.close()];
-                                    case 1:
-                                        _a.sent();
-                                        return [2 /*return*/];
-                                }
-                            });
-                        }); }))];
-                case 3:
-                    _a.sent();
-                    (0, helper_1.print)("Closed ".concat(consumers.length > 1 ? 'consumers' : 'consumer'));
-                    return [4 /*yield*/, client.close()];
-                case 4:
-                    _a.sent();
-                    (0, helper_1.print)("Closed client");
-                    return [3 /*break*/, 6];
-                case 5:
-                    e_2 = _a.sent();
-                    (0, helper_1.print_err)(e_2);
-                    return [3 /*break*/, 6];
-                case 6: return [2 /*return*/];
-            }
-        });
-    });
-}
-exports.close = close;

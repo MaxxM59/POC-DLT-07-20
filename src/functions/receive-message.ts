@@ -1,5 +1,6 @@
 import * as Pulsar from 'pulsar-client';
-import { POCConfig, mock_nack, print, print_err } from '../util/helper';
+import { mock_nack, print, print_err } from '../util/helper';
+import { POCConfig } from '../util/interfaces';
 
 export async function handle_message(
   message: Pulsar.Message,

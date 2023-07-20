@@ -1,12 +1,8 @@
 import * as Pulsar from 'pulsar-client';
 
-import { POCConfig, print, print_err } from '../util/helper';
+import { print, print_err } from '../util/helper';
 import { handle_message } from './receive-message';
-export interface SeededConsumer {
-  name: string;
-  consumer: Pulsar.Consumer;
-}
-
+import { POCConfig, SeededConsumer } from '../util/interfaces';
 // Init pulsar client
 export async function init_client(): Promise<Pulsar.Client> {
   return new Pulsar.Client({
@@ -80,32 +76,5 @@ export async function create_consumer(
   } catch (e) {
     print_err(`Failed to create consumer ${consumer_name} :  ${e}`);
     throw Error(e);
-  }
-}
-
-export async function close(
-  producer: Pulsar.Producer,
-  consumers: SeededConsumer[],
-  client: Pulsar.Client
-): Promise<void> {
-  try {
-    await producer.flush();
-    print(`Flushed producer`);
-
-    await producer.close();
-    print(`Closed producer`);
-
-    await Promise.all(
-      consumers.map(async c => {
-        await c.consumer.close();
-      })
-    );
-
-    print(`Closed ${consumers.length > 1 ? 'consumers' : 'consumer'}`);
-
-    await client.close();
-    print(`Closed client`);
-  } catch (e) {
-    print_err(e);
   }
 }

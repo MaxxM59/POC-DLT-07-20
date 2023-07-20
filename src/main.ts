@@ -1,7 +1,7 @@
 import * as Pulsar from 'pulsar-client';
 import { parse_env } from './util/env';
 
-import { POCConfig } from './util/helper';
+import { POCConfig } from './util/interfaces';
 import { create_producer, seed_consumers, init_client } from './functions/seed';
 import { produce_messages } from './functions/send-messages';
 

@@ -1,4 +1,5 @@
-import { POCConfig, make_dlq_name } from './helper';
+import { make_dlq_name } from './helper';
+import { POCConfig } from './interfaces';
 
 export async function parse_env(): Promise<POCConfig> {
   const topic_name = 'POC-topic-partitioned';

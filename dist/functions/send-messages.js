@@ -41,7 +41,7 @@ var helper_1 = require("../util/helper");
 var seed_1 = require("./seed");
 function produce_messages(client, producer, config, consumers) {
     return __awaiter(this, void 0, void 0, function () {
-        var e_1, i, msg, new_consumer_name_1, new_consumer_1, new_consumer_name, new_consumer;
+        var e_1, i, msg;
         return __generator(this, function (_a) {
             switch (_a.label) {
                 case 0:
@@ -71,39 +71,62 @@ function produce_messages(client, producer, config, consumers) {
                 case 5:
                     _a.sent();
                     if (!(i === Math.ceil(config.messages.total_messages / 2))) return [3 /*break*/, 9];
-                    return [4 /*yield*/, (0, helper_1.sleep)(2000)];
+                    if (!config.consumers.mock.unsub_half) return [3 /*break*/, 7];
+                    return [4 /*yield*/, remove_first_consumer(consumers)];
                 case 6:
-                    _a.sent();
-                    (0, helper_1.print)("Closing ".concat(consumers[0].name, " after sending 1st half of messages"));
-                    return [4 /*yield*/, consumers[0].consumer.close()];
+                    consumers = _a.sent();
+                    _a.label = 7;
                 case 7:
-                    _a.sent();
-                    new_consumer_name_1 = "CONSUMER-".concat(consumers.length + 1);
-                    (0, helper_1.print)("Opening new consumer after sending 1st half of messages : ".concat(new_consumer_name_1));
-                    return [4 /*yield*/, (0, seed_1.create_consumer)(client, config, new_consumer_name_1)];
+                    if (!config.consumers.mock.add_sub_half) return [3 /*break*/, 9];
+                    return [4 /*yield*/, add_consumer(client, config, consumers, true)];
                 case 8:
-                    new_consumer_1 = _a.sent();
-                    consumers.push({ consumer: new_consumer_1, name: new_consumer_name_1 });
+                    consumers = _a.sent();
                     _a.label = 9;
                 case 9:
                     i++;
                     return [3 /*break*/, 4];
-                case 10: return [4 /*yield*/, (0, helper_1.sleep)(2000)];
+                case 10:
+                    if (!config.consumers.mock.add_sub_end) return [3 /*break*/, 12];
+                    return [4 /*yield*/, add_consumer(client, config, consumers, false)];
                 case 11:
-                    _a.sent();
-                    new_consumer_name = "CONSUMER-".concat(consumers.length + 1);
-                    (0, helper_1.print)("Opening new consumer after all messages were sent : ".concat(new_consumer_name));
-                    return [4 /*yield*/, (0, seed_1.create_consumer)(client, config, new_consumer_name)];
-                case 12:
-                    new_consumer = _a.sent();
-                    (0, helper_1.print)("Opening new consumer after all messages were sent : ".concat(new_consumer_name));
-                    consumers.push({ consumer: new_consumer, name: new_consumer_name });
-                    return [4 /*yield*/, (0, seed_1.create_consumer)(client, config, new_consumer_name)];
-                case 13:
-                    _a.sent();
-                    return [2 /*return*/];
+                    consumers = _a.sent();
+                    _a.label = 12;
+                case 12: return [2 /*return*/];
             }
         });
     });
 }
 exports.produce_messages = produce_messages;
+function remove_first_consumer(consumers) {
+    return __awaiter(this, void 0, void 0, function () {
+        return __generator(this, function (_a) {
+            switch (_a.label) {
+                case 0: return [4 /*yield*/, (0, helper_1.sleep)(2000)];
+                case 1:
+                    _a.sent();
+                    (0, helper_1.print)("Closing ".concat(consumers[0].name, " after sending 1st half of messages"));
+                    return [4 /*yield*/, consumers[0].consumer.close()];
+                case 2:
+                    _a.sent();
+                    return [2 /*return*/, consumers.slice(0, 1)];
+            }
+        });
+    });
+}
+function add_consumer(client, config, consumers, half) {
+    return __awaiter(this, void 0, void 0, function () {
+        var new_consumer_name, new_consumer;
+        return __generator(this, function (_a) {
+            switch (_a.label) {
+                case 0:
+                    new_consumer_name = "CONSUMER-".concat(consumers.length + 1);
+                    (0, helper_1.print)("Opening new consumer after ".concat(half ? 'sending 1st half of messages' : 'all messages were sent', " : ").concat(new_consumer_name));
+                    return [4 /*yield*/, (0, seed_1.create_consumer)(client, config, new_consumer_name)];
+                case 1:
+                    new_consumer = _a.sent();
+                    consumers.push({ consumer: new_consumer, name: new_consumer_name });
+                    return [2 /*return*/, consumers];
+            }
+        });
+    });
+}
