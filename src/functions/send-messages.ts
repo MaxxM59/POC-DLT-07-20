@@ -2,7 +2,7 @@ import * as Pulsar from 'pulsar-client';
 import { POCConfig, print, print_err, mock_partition_key, sleep } from '../util/helper';
 import { SeededConsumer, create_consumer } from './seed';
 
-export async function send_messages(
+export async function produce_messages(
   client: Pulsar.Client,
   producer: Pulsar.Producer,
   config: POCConfig,

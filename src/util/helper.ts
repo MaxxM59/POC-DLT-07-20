@@ -2,17 +2,17 @@
 import * as Pulsar from 'pulsar-client';
 
 export interface POCConfig {
+  topic_name: string;
   producer: ProducerConfig;
   messages: MessageConfig;
   consumers: ConsumersConfig;
 }
 
 export interface ProducerConfig {
-  topic_name: string;
-  nack_timeout: number;
-  ack_timeout: number;
-  max_redelivery: number;
-  dlq_topic_name: string;
+  name: string;
+  send_timeout_ms: number;
+  hashing_scheme: Pulsar.HashingScheme;
+  routing_mode: Pulsar.MessageRoutingMode;
 }
 
 export interface MessageConfig {
@@ -22,7 +22,18 @@ export interface MessageConfig {
 
 export interface ConsumersConfig {
   consumers_number: number;
-  mock_nack: boolean;
+  nack_timeout: number;
+  ack_timeout: number;
+  dead_letter: {
+    dlq_topic_name: string;
+    max_redelivery: number;
+  };
+  mock: {
+    nack: boolean;
+    add_sub_half: boolean;
+    add_sub_end: boolean;
+    unsub_half: boolean;
+  };
 }
 // Way to get nack based on % 2
 export async function mock_nack(message: Pulsar.Message, max_redelivery: number): Promise<boolean> {

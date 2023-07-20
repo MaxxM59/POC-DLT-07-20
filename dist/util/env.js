@@ -44,20 +44,31 @@ function parse_env() {
         return __generator(this, function (_a) {
             topic_name = 'POC-topic-partitioned';
             return [2 /*return*/, {
+                    topic_name: topic_name,
                     producer: {
-                        topic_name: topic_name,
-                        ack_timeout: 10000,
-                        nack_timeout: 1000,
-                        max_redelivery: 2,
-                        dlq_topic_name: (0, helper_1.make_dlq_name)(topic_name),
+                        name: 'POC-producer',
+                        send_timeout_ms: 30000,
+                        hashing_scheme: 'Murmur3_32Hash',
+                        routing_mode: 'RoundRobinDistribution',
                     },
                     messages: {
                         total_messages: 5,
                         produce_messages_batch: 10,
                     },
                     consumers: {
-                        mock_nack: true,
                         consumers_number: 2,
+                        ack_timeout: 10000,
+                        nack_timeout: 1000,
+                        dead_letter: {
+                            max_redelivery: 2,
+                            dlq_topic_name: (0, helper_1.make_dlq_name)(topic_name),
+                        },
+                        mock: {
+                            nack: true,
+                            add_sub_half: true,
+                            add_sub_end: true,
+                            unsub_half: true,
+                        },
                     },
                 }];
         });

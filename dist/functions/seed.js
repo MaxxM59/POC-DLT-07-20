@@ -62,11 +62,11 @@ function create_producer(client, config) {
                     producer_name = 'POC-producer';
                     (0, helper_1.print)("Creating producer ".concat(producer_name));
                     return [4 /*yield*/, client.createProducer({
-                            topic: config.producer.topic_name,
-                            producerName: producer_name,
-                            sendTimeoutMs: 30000,
-                            hashingScheme: 'Murmur3_32Hash',
-                            messageRoutingMode: 'RoundRobinDistribution',
+                            topic: config.topic_name,
+                            producerName: config.producer.name,
+                            sendTimeoutMs: config.producer.send_timeout_ms,
+                            hashingScheme: config.producer.hashing_scheme,
+                            messageRoutingMode: config.producer.routing_mode,
                         })];
                 case 1:
                     producer = _a.sent();
@@ -113,15 +113,15 @@ function create_consumer(client, config, consumer_name) {
                     _a.trys.push([0, 2, , 3]);
                     (0, helper_1.print)("Creating consumer ".concat(consumer_name));
                     return [4 /*yield*/, client.subscribe({
-                            ackTimeoutMs: config.producer.ack_timeout,
-                            nAckRedeliverTimeoutMs: config.producer.nack_timeout,
-                            topic: config.producer.topic_name,
+                            ackTimeoutMs: config.consumers.ack_timeout,
+                            nAckRedeliverTimeoutMs: config.consumers.nack_timeout,
+                            topic: config.topic_name,
                             subscription: "POC-subscription-".concat(consumer_name),
                             subscriptionType: 'KeyShared',
                             deadLetterPolicy: {
-                                deadLetterTopic: config.producer.dlq_topic_name,
-                                maxRedeliverCount: config.producer.max_redelivery,
-                                initialSubscriptionName: "".concat(config.producer.dlq_topic_name, "-sub"),
+                                deadLetterTopic: config.consumers.dead_letter.dlq_topic_name,
+                                maxRedeliverCount: config.consumers.dead_letter.max_redelivery,
+                                initialSubscriptionName: "".concat(config.consumers.dead_letter.dlq_topic_name, "-sub"),
                             },
                             // eslint-disable-next-line @typescript-eslint/no-misused-promises
                             listener: function (message, consumer) { return __awaiter(_this, void 0, void 0, function () {

@@ -36,10 +36,10 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
     }
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.send_messages = void 0;
+exports.produce_messages = void 0;
 var helper_1 = require("../util/helper");
 var seed_1 = require("./seed");
-function send_messages(client, producer, config, consumers) {
+function produce_messages(client, producer, config, consumers) {
     return __awaiter(this, void 0, void 0, function () {
         var e_1, i, msg, new_consumer_name_1, new_consumer_1, new_consumer_name, new_consumer;
         return __generator(this, function (_a) {
@@ -106,4 +106,4 @@ function send_messages(client, producer, config, consumers) {
         });
     });
 }
-exports.send_messages = send_messages;
+exports.produce_messages = produce_messages;

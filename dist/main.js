@@ -50,7 +50,7 @@ function run(client, config) {
                     return [4 /*yield*/, (0, seed_1.seed_consumers)(client, config, config.consumers.consumers_number)];
                 case 2:
                     consumers = _a.sent();
-                    return [4 /*yield*/, (0, send_messages_1.send_messages)(client, producer, config, consumers)];
+                    return [4 /*yield*/, (0, send_messages_1.produce_messages)(client, producer, config, consumers)];
                 case 3:
                     _a.sent();
                     return [2 /*return*/];

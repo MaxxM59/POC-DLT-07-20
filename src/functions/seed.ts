@@ -21,11 +21,11 @@ export async function create_producer(client: Pulsar.Client, config: POCConfig):
   print(`Creating producer ${producer_name}`);
 
   const producer = await client.createProducer({
-    topic: config.producer.topic_name,
-    producerName: producer_name,
-    sendTimeoutMs: 30000,
-    hashingScheme: 'Murmur3_32Hash',
-    messageRoutingMode: 'RoundRobinDistribution',
+    topic: config.topic_name,
+    producerName: config.producer.name,
+    sendTimeoutMs: config.producer.send_timeout_ms,
+    hashingScheme: config.producer.hashing_scheme,
+    messageRoutingMode: config.producer.routing_mode,
   });
 
   print(`Successfully created producer ${producer_name}`);
@@ -56,15 +56,15 @@ export async function create_consumer(
     print(`Creating consumer ${consumer_name}`);
 
     const consumer = await client.subscribe({
-      ackTimeoutMs: config.producer.ack_timeout,
-      nAckRedeliverTimeoutMs: config.producer.nack_timeout,
-      topic: config.producer.topic_name,
+      ackTimeoutMs: config.consumers.ack_timeout,
+      nAckRedeliverTimeoutMs: config.consumers.nack_timeout,
+      topic: config.topic_name,
       subscription: `POC-subscription-${consumer_name}`,
       subscriptionType: 'KeyShared',
       deadLetterPolicy: {
-        deadLetterTopic: config.producer.dlq_topic_name,
-        maxRedeliverCount: config.producer.max_redelivery,
-        initialSubscriptionName: `${config.producer.dlq_topic_name}-sub`,
+        deadLetterTopic: config.consumers.dead_letter.dlq_topic_name,
+        maxRedeliverCount: config.consumers.dead_letter.max_redelivery,
+        initialSubscriptionName: `${config.consumers.dead_letter.dlq_topic_name}-sub`,
       },
 
       // eslint-disable-next-line @typescript-eslint/no-misused-promises
