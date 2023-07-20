@@ -1,8 +1,8 @@
 
-*dist*/*
-dist/*/*
+.DS_Store
+node_modules
 dist/
-dist
+dist/*/*
 apidocs/
 build/
 node_modules/
@@ -16,4 +16,3 @@ pkg/mac/build-pulsar/
 lib/
 src/cert.pem
 
-*.js

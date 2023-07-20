@@ -43,15 +43,15 @@ export async function parse_env(): Promise<POCConfig> {
         // Acked if redelivery count === dead_letter.max_redelivery
         ack_on_last_redelivery: false,
         // Add new consumer when half messages were sent
-        add_sub_half: true,
+        add_sub_half: false,
         // Add new consumer when all messages were sent
         add_sub_end: false,
         // Unsub first consumer when half messages were sent
         unsub_first_consumer_half: false,
         // Close first consumer when half messages were sent
-        close_first_consumer_half: false,
+        close_first_consumer_half: true,
         // Reopen consumer when all messages were sent
-        reopen_first_consumer_end: false,
+        reopen_first_consumer_end: true,
         // Mock failover
         mock_failover: false,
       },
