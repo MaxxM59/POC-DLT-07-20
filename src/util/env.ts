@@ -14,7 +14,7 @@ export async function parse_env(): Promise<POCConfig> {
       routing_mode: 'UseSinglePartition',
     },
     messages: {
-      total_messages: 1000,
+      total_messages: 5,
       close_after_messages_sent: false,
       ordering_key: true,
       partition_key: false,
