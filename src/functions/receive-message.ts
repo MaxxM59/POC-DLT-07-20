@@ -18,11 +18,9 @@ export async function handle_message(
 
   print(
     `[${consumer_name}] Handling message: ${message.getData().toString()} 
-                            => Delivery count: ${message.getRedeliveryCount()}/${
-                              config.consumers.dead_letter.max_redelivery
-                            }
-                            => Topic name: ${message.getTopicName()}
-                            => Partition key: ${message.getPartitionKey()}`,
+=> Delivery count: ${message.getRedeliveryCount()}/${config.consumers.dead_letter.max_redelivery}
+=> Topic name: ${message.getTopicName()}
+=> Partition key: ${message.getPartitionKey()}`,
     RECEIVE_MESSAGE
   );
   // Other properties from current message

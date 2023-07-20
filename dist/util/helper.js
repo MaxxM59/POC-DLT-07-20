@@ -69,13 +69,13 @@ async function print_topic_partitons(client, config) {
 }
 function print(str, function_name) {
     const now = new Date();
-    // eslint-disable-next-line sonarjs/no-nested-template-literals
-    console.log(`\n[${format_time(now)}] -- ${function_name !== undefined ? `[${function_name}] -- ` : ''}${str}`);
+    console.log(// eslint-disable-next-line sonarjs/no-nested-template-literals
+    `\n[${format_time(now)}] -- ${function_name !== undefined ? `Function : [${function_name}] -- ` : ''}${str}`);
 }
 function print_err(str, function_name) {
     const now = new Date();
-    // eslint-disable-next-line sonarjs/no-nested-template-literals
-    console.error(`\n[${format_time(now)}] -- ${function_name !== undefined ? `[${function_name}] -- ` : ''}${str}`);
+    console.error(// eslint-disable-next-line sonarjs/no-nested-template-literals
+    `\n[${format_time(now)}] -- ${function_name !== undefined ? `Function : [${function_name}] -- ` : ''}${str}`);
 }
 function stringify(obj) {
     return JSON.stringify(obj, null, 2);

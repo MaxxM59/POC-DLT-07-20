@@ -64,6 +64,8 @@ function _interop_require_wildcard(obj, nodeInterop) {
     }
     return newObj;
 }
+const CREATE_PRODUCER = 'Create producer';
+const CREATE_CONSUMER = 'Create consumer';
 async function init_client() {
     return new _pulsarclient.Client({
         serviceUrl: 'pulsar://localhost:6650',
@@ -72,7 +74,7 @@ async function init_client() {
 }
 async function create_producer(client, config) {
     const producer_name = 'POC-producer';
-    (0, _helper.print)(`Creating producer ${producer_name}`);
+    (0, _helper.print)(`Creating producer ${producer_name}`, CREATE_PRODUCER);
     const producer = await client.createProducer({
         topic: config.topic_name,
         producerName: config.producer.name,
@@ -80,7 +82,7 @@ async function create_producer(client, config) {
         hashingScheme: config.producer.hashing_scheme,
         messageRoutingMode: config.producer.routing_mode
     });
-    (0, _helper.print)(`Successfully created producer ${producer_name}`);
+    (0, _helper.print)(`Successfully created producer ${producer_name}`, CREATE_PRODUCER);
     return producer;
 }
 async function seed_consumers(client, config, consumers_number) {
@@ -94,7 +96,7 @@ async function seed_consumers(client, config, consumers_number) {
 }
 async function create_consumer(client, config, consumer_name) {
     try {
-        (0, _helper.print)(`Creating consumer ${consumer_name}`);
+        (0, _helper.print)(`Creating consumer ${consumer_name}`, CREATE_CONSUMER);
         const sub_name = `POC-subscription-${consumer_name}`;
         //const split = consumer_name.split('-');
         // const topic_name = `${config.topic_name}-partition-${split[split.length - 1]}`;
@@ -118,14 +120,14 @@ async function create_consumer(client, config, consumer_name) {
                 await (0, _receivemessage.handle_message)(message, consumer, consumer_name, config);
             }
         });
-        (0, _helper.print)(`Successfully created consumer ${consumer_name}`);
+        (0, _helper.print)(`Successfully created consumer ${consumer_name}`, CREATE_CONSUMER);
         return {
             name: consumer_name,
             sub_name: sub_name,
             consumer: consumer
         };
     } catch (e) {
-        (0, _helper.print_err)(`Failed to create consumer ${consumer_name} :  ${e}`);
+        (0, _helper.print_err)(`Failed to create consumer ${consumer_name} :  ${e}`, CREATE_CONSUMER);
         throw e;
     }
 }

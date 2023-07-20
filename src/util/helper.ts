@@ -48,15 +48,19 @@ export async function print_topic_partitons(client: Pulsar.Client, config: POCCo
 export function print(str: string, function_name?: string): void {
   const now = new Date();
 
-  // eslint-disable-next-line sonarjs/no-nested-template-literals
-  console.log(`\n[${format_time(now)}] -- ${function_name !== undefined ? `[${function_name}] -- ` : ''}${str}`);
+  console.log(
+    // eslint-disable-next-line sonarjs/no-nested-template-literals
+    `\n[${format_time(now)}] -- ${function_name !== undefined ? `Function : [${function_name}] -- ` : ''}${str}`
+  );
 }
 
 export function print_err(str: string, function_name?: string): void {
   const now = new Date();
 
-  // eslint-disable-next-line sonarjs/no-nested-template-literals
-  console.error(`\n[${format_time(now)}] -- ${function_name !== undefined ? `[${function_name}] -- ` : ''}${str}`);
+  console.error(
+    // eslint-disable-next-line sonarjs/no-nested-template-literals
+    `\n[${format_time(now)}] -- ${function_name !== undefined ? `Function : [${function_name}] -- ` : ''}${str}`
+  );
 }
 
 export function stringify(obj: object): string {
