@@ -18,11 +18,11 @@ export async function mock_half(
   }
 
   if (config.consumers.mock.unsub_first_consumer_half) {
-    await unsub_first_consumer(consumers);
+    await unsub_first_consumer(config, consumers);
   }
 
   if (config.consumers.mock.close_first_consumer_half) {
-    await close_first_consumer(consumers);
+    await close_first_consumer(config, consumers);
   }
 
   if (config.consumers.mock.add_sub_half) {

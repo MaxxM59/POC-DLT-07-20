@@ -37,10 +37,13 @@ export async function add_consumer(
   }
 }
 
-export async function unsub_first_consumer(consumers: SeededConsumer[]): Promise<void> {
+export async function unsub_first_consumer(config: POCConfig, consumers: SeededConsumer[]): Promise<void> {
   try {
     await consumers[0].consumer.unsubscribe();
-    print(`Unsubscribed ${consumers[0].name} after sending 1st half of messages`, UNSUB_FIRST_CONSUMER);
+    print(
+      `Unsubscribed ${consumers[0].name} after sending ${config.messages.total_messages / 2} messages`,
+      UNSUB_FIRST_CONSUMER
+    );
   } catch (e) {
     if (e instanceof Error) {
       print_err(e.message, UNSUB_FIRST_CONSUMER);
@@ -50,9 +53,12 @@ export async function unsub_first_consumer(consumers: SeededConsumer[]): Promise
     }
   }
 }
-export async function close_first_consumer(consumers: SeededConsumer[]): Promise<void> {
+export async function close_first_consumer(config: POCConfig, consumers: SeededConsumer[]): Promise<void> {
   await consumers[0].consumer.close();
-  print(`Closed ${consumers[0].name} after sending 1st half of messages`, CLOSE_FIRST_CONSUMER);
+  print(
+    `Closed ${consumers[0].name} after sending ${config.messages.total_messages / 2} messages`,
+    CLOSE_FIRST_CONSUMER
+  );
   try {
   } catch (e) {
     if (e instanceof Error) {
@@ -73,7 +79,9 @@ export async function resub_first_consumer(
   try {
     await create_consumer(client, config, consumers[0].name);
     print(
-      `Reopened ${consumers[0].name} after ${half ? 'sending 1st half of messages' : 'all messages were sent'} `,
+      `Reopened ${consumers[0].name} after ${
+        half ? `sending ${config.messages.total_messages / 2} messages` : 'all messages were sent'
+      } `,
       RESUB_FIRST_CONSUMER
     );
   } catch (e) {
@@ -94,7 +102,7 @@ export async function mock_failover(
 ): Promise<SeededConsumer[]> {
   try {
     consumers = await add_consumer(client, config, consumers, half);
-    await unsub_first_consumer(consumers);
+    await unsub_first_consumer(config, consumers);
 
     await resub_first_consumer(client, config, consumers, true);
     await consumers[consumers.length - 1].consumer.unsubscribe();
