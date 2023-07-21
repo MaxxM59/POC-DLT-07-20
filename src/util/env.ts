@@ -15,7 +15,7 @@ export async function parse_env(): Promise<POCConfig> {
       routing_mode: 'UseSinglePartition',
     },
     messages: {
-      total_messages: 20,
+      total_messages: 30,
       close_after_messages_sent: false,
       ordering_key: true,
       partition_key: false,
@@ -58,9 +58,9 @@ export async function parse_env(): Promise<POCConfig> {
       },
       mock: {
         // Nack messages ending with odd number (eg: message-1)
-        nack: true,
+        nack: false,
         // Acked if redelivery count === dead_letter.max_redelivery
-        ack_on_last_redelivery: true,
+        ack_on_last_redelivery: false,
         // Add new consumer when half messages were sent
         add_sub_half: false,
         // Add new consumer when all messages were sent

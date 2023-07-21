@@ -4,6 +4,8 @@ import { POCConfig, SeededConsumer } from '../util/interfaces';
 import { close } from './close';
 import { mock_end, mock_half } from './mock';
 
+const PRODUCE_MESSAGE = 'PRODUCE MESSAGES';
+
 export async function produce_messages(
   client: Pulsar.Client,
   producer: Pulsar.Producer,
@@ -21,7 +23,7 @@ export async function produce_messages(
       partitionKey: config.messages.partition_key ? mock_key(config.consumers.consumers_number) : undefined,
     });
     if (ordering_key !== undefined) {
-      print(`[${producer.getProducerName()}] -- Ordering key for ${msg} : ${ordering_key}`, 'PRODUCE MESSAGES');
+      print(`[${producer.getProducerName()}] -- Ordering key for ${msg} : ${ordering_key}`, PRODUCE_MESSAGE);
     }
     // Mock sub/unsub at half
     if (i === Math.ceil(config.messages.total_messages / 2)) {
@@ -41,13 +43,14 @@ export async function produce_messages(
 async function flush(producer: Pulsar.Producer, config: POCConfig): Promise<void> {
   try {
     print(
-      `[${producer.getProducerName()}] Cleaning producer before sending ${config.messages.total_messages} messages`
+      `[${producer.getProducerName()}] Cleaning producer before sending ${config.messages.total_messages} messages`,
+      PRODUCE_MESSAGE
     );
     // Assert no msg
     await producer.flush();
   } catch (e) {
     if (e instanceof Error) {
-      print_err(e.message);
+      print_err(e.message, PRODUCE_MESSAGE);
     }
     throw e;
   }

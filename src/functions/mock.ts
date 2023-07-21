@@ -30,7 +30,7 @@ export async function mock_half(
   }
 
   if (config.consumers.mock.reopen_first_consumer_half) {
-    await resub_first_consumer(client, config, consumers);
+    await resub_first_consumer(client, config, consumers, true);
   }
 
   if (config.consumers.mock.mock_failover) {
@@ -50,7 +50,7 @@ export async function mock_end(
   }
 
   if (config.consumers.mock.reopen_first_consumer_end) {
-    await resub_first_consumer(client, config, consumers);
+    await resub_first_consumer(client, config, consumers, false);
   }
 
   return consumers;

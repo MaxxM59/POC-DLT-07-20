@@ -1,4 +1,4 @@
-import { print_err, sleep } from '../util/helper';
+import { print_err, print } from '../util/helper';
 import { POCConfig, SeededConsumer } from '../util/interfaces';
 import { create_consumer } from './seed';
 import * as Pulsar from 'pulsar-client';
@@ -17,15 +17,15 @@ export async function add_consumer(
 ): Promise<SeededConsumer[]> {
   try {
     const new_consumer_name = `CONSUMER-${consumers.length + 1}`;
-    await sleep(
-      2000,
-      MOCK_ADD_CONSUMER,
-      `Opening new consumer after ${
-        half ? 'sending 1st half of messages' : 'all messages were sent'
-      } : ${new_consumer_name}`
-    );
+
     const new_consumer = await create_consumer(client, config, new_consumer_name);
     consumers.push(new_consumer);
+    print(
+      `Opened new consumer after ${
+        half ? 'sending 1st half of messages' : 'all messages were sent'
+      } : ${new_consumer_name}`,
+      MOCK_ADD_CONSUMER
+    );
     return consumers;
   } catch (e) {
     if (e instanceof Error) {
@@ -39,8 +39,8 @@ export async function add_consumer(
 
 export async function unsub_first_consumer(consumers: SeededConsumer[]): Promise<void> {
   try {
-    await sleep(2000, UNSUB_FIRST_CONSUMER, `Unsubscribing ${consumers[0].name} after sending 1st half of messages`);
     await consumers[0].consumer.unsubscribe();
+    print(`Unsubscribed ${consumers[0].name} after sending 1st half of messages`, UNSUB_FIRST_CONSUMER);
   } catch (e) {
     if (e instanceof Error) {
       print_err(e.message, UNSUB_FIRST_CONSUMER);
@@ -51,8 +51,8 @@ export async function unsub_first_consumer(consumers: SeededConsumer[]): Promise
   }
 }
 export async function close_first_consumer(consumers: SeededConsumer[]): Promise<void> {
-  await sleep(2000, CLOSE_FIRST_CONSUMER, `Closing ${consumers[0].name} after sending 1st half of messages`);
   await consumers[0].consumer.close();
+  print(`Closed ${consumers[0].name} after sending 1st half of messages`, CLOSE_FIRST_CONSUMER);
   try {
   } catch (e) {
     if (e instanceof Error) {
@@ -67,11 +67,15 @@ export async function close_first_consumer(consumers: SeededConsumer[]): Promise
 export async function resub_first_consumer(
   client: Pulsar.Client,
   config: POCConfig,
-  consumers: SeededConsumer[]
+  consumers: SeededConsumer[],
+  half: boolean
 ): Promise<void> {
-  await sleep(2000, RESUB_FIRST_CONSUMER, `Reopening ${consumers[0].name} after all messages were sent`);
-  await create_consumer(client, config, consumers[0].name);
   try {
+    await create_consumer(client, config, consumers[0].name);
+    print(
+      `Reopened ${consumers[0].name} after ${half ? 'sending 1st half of messages' : 'all messages were sent'} `,
+      RESUB_FIRST_CONSUMER
+    );
   } catch (e) {
     if (e instanceof Error) {
       print_err(e.message, RESUB_FIRST_CONSUMER);
@@ -89,13 +93,12 @@ export async function mock_failover(
   half: boolean
 ): Promise<SeededConsumer[]> {
   try {
-    await sleep(2000, MOCK_FAILOVER, `Mocking failover`);
     consumers = await add_consumer(client, config, consumers, half);
     await unsub_first_consumer(consumers);
 
-    await resub_first_consumer(client, config, consumers);
+    await resub_first_consumer(client, config, consumers, true);
     await consumers[consumers.length - 1].consumer.unsubscribe();
-
+    print(`Mocked failover`, MOCK_FAILOVER);
     return consumers;
   } catch (e) {
     if (e instanceof Error) {

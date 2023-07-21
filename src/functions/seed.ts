@@ -76,7 +76,7 @@ export async function create_consumer(
 
       // eslint-disable-next-line @typescript-eslint/no-misused-promises
       listener: async (message, consumer): Promise<void> => {
-        if (config.consumers.print_partitions) {
+        if (config.print.receive.partitions) {
           await print_topic_partitons(client, config);
         }
         await handle_message(message, consumer, consumer_name, config);
