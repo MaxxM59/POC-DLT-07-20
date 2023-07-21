@@ -1,5 +1,5 @@
 import * as Pulsar from 'pulsar-client';
-import { mock_nack, print, print_err } from '../util/helper';
+import { mock_nack, parse_print, print, print_err } from '../util/helper';
 import { POCConfig } from '../util/interfaces';
 
 const RECEIVE_MESSAGE = 'Receive message';
@@ -16,20 +16,10 @@ export async function handle_message(
     return;
   }
 
-  print(
-    `[${consumer_name}] Handling message: ${message.getData().toString()} 
-=> Delivery count: ${message.getRedeliveryCount()}/${config.consumers.dead_letter.max_redelivery}
-=> Topic name: ${message.getTopicName()}
-=> Partition key: ${message.getPartitionKey()}`,
-    RECEIVE_MESSAGE
-  );
-  // Other properties from current message
-  //
-  //                        => MessageId: ${message.getMessageId()}
-  //                        => PublishTimestamp: ${message.getPublishTimestamp()}
-  //                        => EventTimestamp: ${message.getEventTimestamp()}
-  //                        => Properties: ${JSON.stringify(message.getProperties())}
-  //
+  if (config.print.receive.enabled) {
+    print(await parse_print(config, consumer_name, message), RECEIVE_MESSAGE);
+  }
+
   await handle_ack_nack(config, consumer, consumer_name, message);
 }
 

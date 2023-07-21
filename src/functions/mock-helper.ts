@@ -8,6 +8,7 @@ const UNSUB_FIRST_CONSUMER = 'UNSUB FIRST CONSUMER';
 const CLOSE_FIRST_CONSUMER = 'CLOSE FIRST CONSUMER';
 const RESUB_FIRST_CONSUMER = 'RESUB FIRST CONSUMER';
 const MOCK_FAILOVER = 'MOCK FAILOVER';
+
 export async function add_consumer(
   client: Pulsar.Client,
   config: POCConfig,

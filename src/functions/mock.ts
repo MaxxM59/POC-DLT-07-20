@@ -29,6 +29,10 @@ export async function mock_half(
     consumers = await add_consumer(client, config, consumers, true);
   }
 
+  if (config.consumers.mock.reopen_first_consumer_half) {
+    await resub_first_consumer(client, config, consumers);
+  }
+
   if (config.consumers.mock.mock_failover) {
     consumers = await mock_failover(client, config, consumers, true);
   }

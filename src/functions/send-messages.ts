@@ -18,10 +18,13 @@ export async function produce_messages(
     await producer.send({
       data: Buffer.from(msg),
       orderingKey: ordering_key,
-      //  partitionKey: config.messages.partition_key ? mock_key(config.consumers.consumers_number) : undefined,
+      partitionKey: config.messages.partition_key ? mock_key(config.consumers.consumers_number) : undefined,
     });
     if (ordering_key !== undefined) {
-      print(`Ordering key for message : ${msg} => ${ordering_key}`);
+      print(
+        `[${producer.getProducerName()}] -- Ordering key for message : ${msg} => ${ordering_key}`,
+        'PRODUCE MESSAGES'
+      );
     }
     // Mock sub/unsub at half
     if (i === Math.ceil(config.messages.total_messages / 2)) {

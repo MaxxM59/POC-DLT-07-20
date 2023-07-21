@@ -7,6 +7,7 @@ export interface SeededConsumer {
 }
 export interface POCConfig {
   topic_name: string;
+  print: PrintOptions;
   producer: ProducerConfig;
   messages: MessageConfig;
   consumers: ConsumerConfig;
@@ -26,13 +27,25 @@ interface MessageConfig {
   partition_key: boolean;
 }
 
+interface PrintOptions {
+  receive: {
+    enabled: boolean;
+    topic: boolean;
+    partitions: boolean;
+    redelivery_count: boolean;
+    msg_id: boolean;
+    publish_timestamp: boolean;
+    event_timestamp: boolean;
+    properties: boolean;
+  };
+}
 interface ConsumerConfig {
   consumers_number: number;
   nack_timeout: number;
   ack_timeout: number;
   sub_type: Pulsar.SubscriptionType;
   intial_position: Pulsar.InitialPosition;
-  print_partitions: boolean;
+
   dead_letter: {
     dlq_topic_name: string;
     max_redelivery: number;
@@ -44,6 +57,7 @@ interface ConsumerConfig {
     add_sub_end: boolean;
     unsub_first_consumer_half: boolean;
     close_first_consumer_half: boolean;
+    reopen_first_consumer_half: boolean;
     reopen_first_consumer_end: boolean;
     mock_failover: boolean;
   };

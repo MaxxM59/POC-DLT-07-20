@@ -15,10 +15,26 @@ export async function parse_env(): Promise<POCConfig> {
       routing_mode: 'UseSinglePartition',
     },
     messages: {
-      total_messages: 20,
+      total_messages: 10,
       close_after_messages_sent: false,
-      ordering_key: false,
+      ordering_key: true,
       partition_key: false,
+    },
+    print: {
+      receive: {
+        enabled: false,
+        //Print topic name
+        topic: false,
+        // Print topic partitions
+        partitions: false,
+        // Print redelivey count
+        redelivery_count: true,
+        msg_id: false,
+        publish_timestamp: false,
+        event_timestamp: false,
+        // Additional properties
+        properties: false,
+      },
     },
     consumers: {
       consumers_number: 2,
@@ -30,8 +46,7 @@ export async function parse_env(): Promise<POCConfig> {
       sub_type: 'KeyShared',
       //   'Latest' |  'Earliest' ;
       intial_position: 'Latest',
-      // Print topic partitions
-      print_partitions: false,
+
       dead_letter: {
         // (first delivery = 0/max_redelivery)
         max_redelivery: 1,
@@ -43,13 +58,15 @@ export async function parse_env(): Promise<POCConfig> {
         // Acked if redelivery count === dead_letter.max_redelivery
         ack_on_last_redelivery: true,
         // Add new consumer when half messages were sent
-        add_sub_half: true,
+        add_sub_half: false,
         // Add new consumer when all messages were sent
-        add_sub_end: true,
+        add_sub_end: false,
         // Unsub first consumer when half messages were sent
         unsub_first_consumer_half: false,
         // Close first consumer when half messages were sent
-        close_first_consumer_half: false,
+        close_first_consumer_half: true,
+        // Reopen consumer when half messages were sent
+        reopen_first_consumer_half: true,
         // Reopen consumer when all messages were sent
         reopen_first_consumer_end: false,
         // Mock failover
