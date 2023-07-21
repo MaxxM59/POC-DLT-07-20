@@ -14,32 +14,38 @@ export async function produce_messages(
 ): Promise<void> {
   await flush(producer, config);
 
-  for (let i = 1; i <= config.messages.total_messages; i++) {
-    const msg = `message-${i}`;
-    const ordering_key = config.messages.ordering_key ? mock_order_key(config.consumers.consumers_number) : undefined;
-    const partition_key = config.messages.partition_key ? mock_partition_key() : undefined;
-    //const ordering_key = `OK-${i}`;
-    //const partition_key = `PK-${i}`;
-    await producer.send({
-      data: Buffer.from(msg),
-      orderingKey: ordering_key,
-      partitionKey: partition_key,
-    });
-    if (ordering_key !== undefined) {
-      print(`[${producer.getProducerName()}] -- Ordering key for ${msg} : ${ordering_key}`, PRODUCE_MESSAGE);
-    }
-    // Mock sub/unsub at half
-    if (i === Math.ceil(config.messages.total_messages / 2)) {
-      consumers = await mock_half(client, config, consumers);
-    }
-  }
+  try {
+    for (let i = 1; i <= config.messages.total_messages; i++) {
+      const msg = `message-${i}`;
+      const ordering_key = config.messages.ordering_key ? mock_order_key(config.consumers.consumers_number) : undefined;
+      const partition_key = config.messages.partition_key ? mock_partition_key() : undefined;
 
-  // Mock sub/unsub at end
-  consumers = await mock_end(client, config, consumers);
+      await producer.send({
+        data: Buffer.from(msg),
+        orderingKey: ordering_key,
+        partitionKey: partition_key,
+      });
+      if (ordering_key !== undefined) {
+        print(`[${producer.getProducerName()}] -- Ordering key for ${msg} : ${ordering_key}`, PRODUCE_MESSAGE);
+      }
+      // Mock sub/unsub at half
+      if (i === Math.ceil(config.messages.total_messages / 2)) {
+        consumers = await mock_half(client, config, consumers);
+      }
+    }
 
-  // Close
-  if (config.messages.close_after_messages_sent) {
-    await close(producer, consumers, client);
+    // Mock sub/unsub at end
+    consumers = await mock_end(client, config, consumers);
+
+    // Close
+    if (config.messages.close_after_messages_sent) {
+      await close(producer, consumers, client);
+    }
+  } catch (e) {
+    if (e instanceof Error) {
+      print_err(e.message, PRODUCE_MESSAGE);
+    }
+    throw e;
   }
 }
 

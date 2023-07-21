@@ -1,25 +1,30 @@
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 import { CONFIG, KEYS_CONFIG } from './configs';
 import { POCConfig } from './interfaces';
-//const topic_name = 'topic1';
-const topic_name = 'POC-topic';
-const topic_name_dlq = `${topic_name}-DLQ`;
-
-const mock = CONFIG.REGULAR;
+// REGULAR | NEW_SUB | CLOSE_NO_RESUB | CLOSE_RESUB | NACK_NEW_SUB | NACK_CLOSE_NO_RESUB | NACK_CLOSE_RESUB
+const mock = CONFIG.NACK_CLOSE_RESUB;
+// NO_KEY | ORDER_KEY | PART_KEY | BOTH_KEY
 const keys = KEYS_CONFIG.NO_KEY;
+const total_messages = 20;
+const consumers_number = 3;
 
 export async function parse_env(): Promise<POCConfig> {
+  //const topic_name = 'topic1';
+  const topic_name = 'POC-topic-partition-0';
+  const topic_name_dlq = `${topic_name}-DLQ`;
+  //
   // All comments in interfaces.ts
+  //
   return {
     topic_name,
     producer: {
       name: 'POC-producer',
       send_timeout_ms: 10000,
       hashing_scheme: 'Murmur3_32Hash',
-      routing_mode: 'UseSinglePartition',
+      routing_mode: 'CustomPartition',
     },
     messages: {
-      total_messages: 20,
+      total_messages: total_messages,
       close_after_messages_sent: false,
       ordering_key: keys.order_key,
       partition_key: keys.partition_key,
@@ -43,7 +48,7 @@ export async function parse_env(): Promise<POCConfig> {
       },
     },
     consumers: {
-      consumers_number: 3,
+      consumers_number: consumers_number,
       ack_timeout: 10000,
       nack_timeout: 1000,
 
