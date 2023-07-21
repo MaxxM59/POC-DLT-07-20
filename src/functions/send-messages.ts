@@ -1,5 +1,5 @@
 import * as Pulsar from 'pulsar-client';
-import { print, print_err, mock_key } from '../util/helper';
+import { print, print_err, mock_order_key, mock_partition_key } from '../util/helper';
 import { POCConfig, SeededConsumer } from '../util/interfaces';
 import { close } from './close';
 import { mock_end, mock_half } from './mock';
@@ -16,11 +16,15 @@ export async function produce_messages(
 
   for (let i = 1; i <= config.messages.total_messages; i++) {
     const msg = `message-${i}`;
-    const ordering_key = config.messages.ordering_key ? mock_key(config.consumers.consumers_number) : undefined;
+    const ordering_key = config.messages.ordering_key ? mock_order_key(config.consumers.consumers_number) : undefined;
+    const partition_key = config.messages.partition_key
+      ? mock_partition_key(config.consumers.consumers_number)
+      : undefined;
+
     await producer.send({
       data: Buffer.from(msg),
       orderingKey: ordering_key,
-      partitionKey: config.messages.partition_key ? mock_key(config.consumers.consumers_number) : undefined,
+      partitionKey: partition_key,
     });
     if (ordering_key !== undefined) {
       print(`[${producer.getProducerName()}] -- Ordering key for ${msg} : ${ordering_key}`, PRODUCE_MESSAGE);

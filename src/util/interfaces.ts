@@ -16,7 +16,9 @@ export interface POCConfig {
 interface ProducerConfig {
   name: string;
   send_timeout_ms: number;
+  //   'Murmur3_32Hash' |  'BoostHash' |  'JavaStringHash';
   hashing_scheme: Pulsar.HashingScheme;
+  //   'UseSinglePartition' |  'RoundRobinDistribution' |  'CustomPartition';
   routing_mode: Pulsar.MessageRoutingMode;
 }
 
@@ -30,29 +32,38 @@ interface MessageConfig {
 interface PrintOptions {
   receive: {
     enabled: boolean;
+    //Print topic name
     topic: boolean;
+    // Print topic partitions
     partitions: boolean;
+    // Print redelivey count
     redelivery_count: boolean;
     msg_id: boolean;
     publish_timestamp: boolean;
     event_timestamp: boolean;
+    // Additional properties
     properties: boolean;
   };
   ack_nack: {
     enabled: boolean;
     redelivery_count: boolean;
     topic: boolean;
+    partition_key: boolean;
   };
 }
 interface ConsumerConfig {
   consumers_number: number;
+  // Mandatory to enable retry
   nack_timeout: number;
+  // Equal to 0 or >=10000
   ack_timeout: number;
+  //   'Exclusive' |  'Shared' |  'KeyShared' |  'Failover';
   sub_type: Pulsar.SubscriptionType;
+  //   'Earliest' | 'Latest' | '
   intial_position: Pulsar.InitialPosition;
-
   dead_letter: {
     dlq_topic_name: string;
+    // (first delivery = 0/max_redelivery)
     max_redelivery: number;
   };
   mock: {

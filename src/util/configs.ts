@@ -10,26 +10,26 @@ const base = {
   mock_failover: false,
 };
 
+const nack_base = {
+  ...base,
+  nack: true,
+  ack_on_last_redelivery: true,
+};
+
 export const CONFIG = {
   REGULAR: { ...base },
   NEW_SUB: { ...base, add_sub_half: true, add_sub_end: true },
   UNSUB_RESUB: { ...base, unsub_first_consumer_half: true, reopen_first_consumer_half: true },
   CLOSE_RESUB: { ...base, close_first_consumer_half: true, reopen_first_consumer_half: true },
-  NACK: {
-    NEW_SUB: { ...base, nack: true, ack_on_last_redelivery: true, add_sub_half: true, add_sub_end: true },
-    UNSUB_RESUB: {
-      ...base,
-      nack: true,
-      ack_on_last_redelivery: true,
-      unsub_first_consumer_half: true,
-      reopen_first_consumer_half: true,
-    },
-    CLOSE_RESUB: {
-      ...base,
-      nack: true,
-      ack_on_last_redelivery: true,
-      close_first_consumer_half: true,
-      reopen_first_consumer_half: true,
-    },
+  NACK_NEW_SUB: { ...nack_base, add_sub_half: true, add_sub_end: true },
+  NACK_UNSUB_RESUB: {
+    ...nack_base,
+    unsub_first_consumer_half: true,
+    reopen_first_consumer_half: true,
+  },
+  NACK_CLOSE_RESUB: {
+    ...nack_base,
+    close_first_consumer_half: true,
+    reopen_first_consumer_half: true,
   },
 };

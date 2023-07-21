@@ -68,8 +68,12 @@ export function stringify(obj: object): string {
   return JSON.stringify(obj, null, 2);
 }
 
-export function mock_key(consumers_number: number): string {
-  return `k-${Math.round(Math.random() * consumers_number)}`;
+export function mock_order_key(consumers_number: number): string {
+  return `OK-${Math.round(Math.random() * consumers_number)}`;
+}
+
+export function mock_partition_key(consumers_number: number): string {
+  return `PK-${Math.round(Math.random() * consumers_number)}`;
 }
 
 export async function parse_print(config: POCConfig, consumer_name: string, message: Pulsar.Message): Promise<string> {

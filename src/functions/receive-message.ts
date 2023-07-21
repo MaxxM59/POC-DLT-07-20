@@ -61,14 +61,21 @@ async function print_ack_nack_msg(
   postitive: boolean
 ): Promise<void> {
   const redelivery = config.print.ack_nack.redelivery_count
-    ? `\n=> Delivery : [${message.getRedeliveryCount()}/${config.consumers.dead_letter.max_redelivery}]`
+    ? `=> Delivery : [${message.getRedeliveryCount()}/${config.consumers.dead_letter.max_redelivery}]`
     : '';
 
   const topic = config.print.ack_nack.topic
-    ? `\n=> Topic : [${message.getTopicName().split('persistent://public/default/').pop()}]`
+    ? `=> Topic : [${message.getTopicName().split('persistent://public/default/').pop()}]`
     : '';
+
+  const partition_key =
+    config.print.ack_nack.partition_key && message.getPartitionKey() !== ''
+      ? `=> Partition key : [${message.getPartitionKey()}]`
+      : '';
   print(
-    `[${consumer_name}] ${postitive ? 'ACKED' : 'NACKED'} : ${message.getData().toString()}${redelivery}${topic}`,
+    `[${consumer_name}] ${postitive ? 'ACKED' : 'NACKED'} : ${message
+      .getData()
+      .toString()} ${redelivery} ${topic} ${partition_key}`,
     ACK_NACK
   );
 }
