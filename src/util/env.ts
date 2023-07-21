@@ -1,13 +1,12 @@
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-import { CONFIG } from './configs';
+import { CONFIG, KEYS_CONFIG } from './configs';
 import { POCConfig } from './interfaces';
-
+//const topic_name = 'topic1';
 const topic_name = 'POC-topic';
 const topic_name_dlq = `${topic_name}-DLQ`;
 
-const mock = CONFIG.NEW_SUB;
-const order_key = false;
-const partition_key = false;
+const mock = CONFIG.REGULAR;
+const keys = KEYS_CONFIG.NO_KEY;
 
 export async function parse_env(): Promise<POCConfig> {
   // All comments in interfaces.ts
@@ -17,13 +16,13 @@ export async function parse_env(): Promise<POCConfig> {
       name: 'POC-producer',
       send_timeout_ms: 10000,
       hashing_scheme: 'Murmur3_32Hash',
-      routing_mode: 'RoundRobinDistribution',
+      routing_mode: 'UseSinglePartition',
     },
     messages: {
-      total_messages: 10,
+      total_messages: 20,
       close_after_messages_sent: false,
-      ordering_key: order_key,
-      partition_key: partition_key,
+      ordering_key: keys.order_key,
+      partition_key: keys.partition_key,
     },
     print: {
       receive: {
@@ -38,7 +37,7 @@ export async function parse_env(): Promise<POCConfig> {
       },
       ack_nack: {
         enabled: true,
-        redelivery_count: false,
+        redelivery_count: true,
         topic: true,
         partition_key: true,
       },
@@ -59,3 +58,4 @@ export async function parse_env(): Promise<POCConfig> {
     },
   };
 }
+// TODO continue at new new sub with order key

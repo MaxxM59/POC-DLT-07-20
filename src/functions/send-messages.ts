@@ -17,10 +17,9 @@ export async function produce_messages(
   for (let i = 1; i <= config.messages.total_messages; i++) {
     const msg = `message-${i}`;
     const ordering_key = config.messages.ordering_key ? mock_order_key(config.consumers.consumers_number) : undefined;
-    const partition_key = config.messages.partition_key
-      ? mock_partition_key(config.consumers.consumers_number)
-      : undefined;
-
+    const partition_key = config.messages.partition_key ? mock_partition_key() : undefined;
+    //const ordering_key = `OK-${i}`;
+    //const partition_key = `PK-${i}`;
     await producer.send({
       data: Buffer.from(msg),
       orderingKey: ordering_key,

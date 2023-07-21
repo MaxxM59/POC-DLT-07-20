@@ -35,7 +35,8 @@ async function handle_ack_nack(
       (await mock_nack(
         message,
         config.consumers.dead_letter.max_redelivery,
-        config.consumers.mock.ack_on_last_redelivery
+        config.consumers.mock.ack_on_last_redelivery,
+        config.consumers.mock.nack_odd
       ))
     ) {
       if (config.print.ack_nack.enabled) {

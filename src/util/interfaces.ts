@@ -67,8 +67,10 @@ interface ConsumerConfig {
     max_redelivery: number;
   };
   mock: {
-    // Nack messages ending with odd number (eg: message-1)
+    // Nack messages
     nack: boolean;
+    //  Nack messages ending with odd number (eg: message-1)
+    nack_odd: boolean;
     // Acked if redelivery count === dead_letter.max_redelivery
     ack_on_last_redelivery: boolean;
     // Add new consumer when half messages were sent

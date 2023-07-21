@@ -6,13 +6,14 @@ import { POCConfig } from './interfaces';
 export async function mock_nack(
   message: Pulsar.Message,
   max_redelivery: number,
-  ack_on_last_redelivery: boolean
+  ack_on_last_redelivery: boolean,
+  nack_odd: boolean
 ): Promise<boolean> {
   const split = message.getData().toString().split('-');
   if (message.getRedeliveryCount() === max_redelivery && ack_on_last_redelivery) {
     return false;
   } else {
-    return parseInt(split[split.length - 1], 10) % 2 !== 0;
+    return nack_odd ? parseInt(split[split.length - 1], 10) % 2 !== 0 : true;
   }
 }
 
@@ -72,8 +73,9 @@ export function mock_order_key(consumers_number: number): string {
   return `OK-${Math.round(Math.random() * consumers_number)}`;
 }
 
-export function mock_partition_key(consumers_number: number): string {
-  return `PK-${Math.round(Math.random() * consumers_number)}`;
+export function mock_partition_key(): string {
+  const partitions_number = 3;
+  return `PK-${Math.round(Math.random() * partitions_number)}`;
 }
 
 export async function parse_print(config: POCConfig, consumer_name: string, message: Pulsar.Message): Promise<string> {
