@@ -21,10 +21,7 @@ export async function produce_messages(
       partitionKey: config.messages.partition_key ? mock_key(config.consumers.consumers_number) : undefined,
     });
     if (ordering_key !== undefined) {
-      print(
-        `[${producer.getProducerName()}] -- Ordering key for message : ${msg} => ${ordering_key}`,
-        'PRODUCE MESSAGES'
-      );
+      print(`[${producer.getProducerName()}] -- Ordering key for ${msg} : ${ordering_key}`, 'PRODUCE MESSAGES');
     }
     // Mock sub/unsub at half
     if (i === Math.ceil(config.messages.total_messages / 2)) {

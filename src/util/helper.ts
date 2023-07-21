@@ -51,7 +51,7 @@ export function print(str: string, function_name?: string): void {
 
   console.log(
     // eslint-disable-next-line sonarjs/no-nested-template-literals
-    `\n[${format_time(now)}] -- ${function_name !== undefined ? `[Function : ${function_name}] -- ` : ''}${str}`
+    `\n[${format_time(now)}] -- ${function_name !== undefined ? `[SVC : ${function_name}] -- ` : ''}${str}`
   );
 }
 
@@ -60,7 +60,7 @@ export function print_err(str: string, function_name?: string): void {
 
   console.error(
     // eslint-disable-next-line sonarjs/no-nested-template-literals
-    `\n[${format_time(now)}] -- ${function_name !== undefined ? `[Function : ${function_name}] -- ` : ''}${str}`
+    `\n[${format_time(now)}] -- ${function_name !== undefined ? `[SVC : ${function_name}] -- ` : ''}${str}`
   );
 }
 

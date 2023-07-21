@@ -38,14 +38,33 @@ async function handle_ack_nack(
         config.consumers.mock.ack_on_last_redelivery
       ))
     ) {
+      if (config.print.ack_nack.enabled) {
+        await print_ack_nack_msg(config, message, consumer_name, false);
+      }
       consumer.negativeAcknowledge(message);
-      print(`[${consumer_name}] Negative Acknowledged message : ${message.getData().toString()} }`, ACK_NACK);
     } else {
+      if (config.print.ack_nack.enabled) {
+        await print_ack_nack_msg(config, message, consumer_name, true);
+      }
       await consumer.acknowledge(message);
-      print(`[${consumer_name}] Acknowledged message : ${message.getData().toString()} }`, ACK_NACK);
     }
   } catch (e) {
     print_err(`[${consumer_name}] Failed to process message ${message.getData().toString()}: ${e}`, ACK_NACK);
     consumer.negativeAcknowledge(message);
   }
+}
+
+async function print_ack_nack_msg(
+  config: POCConfig,
+  message: Pulsar.Message,
+  consumer_name: string,
+  postitive: boolean
+): Promise<void> {
+  const redelivery = config.print.ack_nack.redelivery_count
+    ? `[${message.getRedeliveryCount()}/${config.consumers.dead_letter.max_redelivery}]`
+    : '';
+  print(
+    `[${consumer_name}] ${postitive ? 'ACKED' : 'NACKED'} : ${message.getData().toString()} ${redelivery}`,
+    ACK_NACK
+  );
 }

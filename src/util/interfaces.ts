@@ -38,6 +38,10 @@ interface PrintOptions {
     event_timestamp: boolean;
     properties: boolean;
   };
+  ack_nack: {
+    enabled: boolean;
+    redelivery_count: boolean;
+  };
 }
 interface ConsumerConfig {
   consumers_number: number;
