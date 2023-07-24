@@ -1,8 +1,8 @@
 import * as Pulsar from 'pulsar-client';
-import { print, print_err, mock_order_key, mock_partition_key } from '../util/helper';
+import { print, mock_order_key, mock_partition_key, print_error } from '../util/helper';
 import { POCConfig, SeededConsumer } from '../util/interfaces';
 import { close } from './close';
-import { mock_end, mock_half } from './mock';
+import { mock_half } from './mock';
 
 const PRODUCE_MESSAGE = 'PRODUCE MESSAGES';
 
@@ -12,7 +12,7 @@ export async function produce_messages(
   config: POCConfig,
   consumers: SeededConsumer[]
 ): Promise<void> {
-  await flush(producer, config);
+  await assert_no_message(producer, config);
 
   try {
     for (let i = 1; i <= config.messages.total_messages; i++) {
@@ -34,33 +34,25 @@ export async function produce_messages(
       }
     }
 
-    // Mock sub/unsub at end
-    consumers = await mock_end(client, config, consumers);
-
     // Close
     if (config.messages.close_after_messages_sent) {
       await close(producer, consumers, client);
     }
   } catch (e) {
-    if (e instanceof Error) {
-      print_err(e.message, PRODUCE_MESSAGE);
-    }
+    print_error(e, PRODUCE_MESSAGE);
     throw e;
   }
 }
 
-async function flush(producer: Pulsar.Producer, config: POCConfig): Promise<void> {
+async function assert_no_message(producer: Pulsar.Producer, config: POCConfig): Promise<void> {
   try {
     print(
       `[${producer.getProducerName()}] Cleaning producer before sending ${config.messages.total_messages} messages`,
       PRODUCE_MESSAGE
     );
-    // Assert no msg
     await producer.flush();
   } catch (e) {
-    if (e instanceof Error) {
-      print_err(e.message, PRODUCE_MESSAGE);
-    }
+    print_error(e, PRODUCE_MESSAGE);
     throw e;
   }
 }

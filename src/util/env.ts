@@ -1,15 +1,17 @@
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 import { CONFIG, KEYS_CONFIG } from './configs';
 import { POCConfig } from './interfaces';
+
 // REGULAR | NEW_SUB | CLOSE_NO_RESUB | CLOSE_RESUB | NACK_NEW_SUB | NACK_CLOSE_NO_RESUB | NACK_CLOSE_RESUB
 const mock = CONFIG.NACK_CLOSE_RESUB;
+
 // NO_KEY | ORDER_KEY | PART_KEY | BOTH_KEY
 const keys = KEYS_CONFIG.NO_KEY;
+
 const total_messages = 20;
 const consumers_number = 3;
 
 export async function parse_env(): Promise<POCConfig> {
-  //const topic_name = 'topic1';
   const topic_name = 'POC-topic-partition-0';
   const topic_name_dlq = `${topic_name}-DLQ`;
   //
@@ -30,28 +32,26 @@ export async function parse_env(): Promise<POCConfig> {
       partition_key: keys.partition_key,
     },
     print: {
-      receive: {
-        enabled: false,
-        topic: false,
-        partitions: false,
-        redelivery_count: true,
-        msg_id: true,
-        publish_timestamp: false,
-        event_timestamp: false,
-        properties: false,
+      produce: {
+        ordering_key: true,
       },
-      ack_nack: {
+      receive: {
         enabled: true,
         redelivery_count: true,
         topic: true,
         partition_key: true,
+        partitions: false,
+        message_id: false,
+        publish_timestamp: false,
+        event_timestamp: false,
+        properties: false,
       },
     },
     consumers: {
+      subscription: 'POC-subscription',
       consumers_number: consumers_number,
       ack_timeout: 10000,
       nack_timeout: 1000,
-
       sub_type: 'KeyShared',
       intial_position: 'Latest',
       dead_letter: {
@@ -63,4 +63,3 @@ export async function parse_env(): Promise<POCConfig> {
     },
   };
 }
-// TODO continue at new new sub with order key

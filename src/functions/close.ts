@@ -1,6 +1,6 @@
 import * as Pulsar from 'pulsar-client';
 
-import { print, print_err, sleep } from '../util/helper';
+import { print_error, print, sleep } from '../util/helper';
 import { SeededConsumer } from '../util/interfaces';
 const CLOSE = 'Close';
 export async function close(
@@ -31,8 +31,7 @@ export async function close(
     print(`Closed client`, CLOSE);
     process.exit(0);
   } catch (e) {
-    if (e instanceof Error) {
-      print_err(e.message, CLOSE);
-    } else throw e;
+    print_error(e, CLOSE);
+    throw e;
   }
 }

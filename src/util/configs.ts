@@ -1,13 +1,13 @@
-const base = {
+import { MockConfig } from './interfaces';
+
+const base: MockConfig = {
   nack: false,
   nack_odd: false,
   ack_on_last_redelivery: false,
   add_sub_half: false,
-  add_sub_end: false,
   unsub_first_consumer_half: false,
   close_first_consumer_half: false,
   reopen_first_consumer_half: false,
-  reopen_first_consumer_end: false,
   mock_failover: false,
 };
 

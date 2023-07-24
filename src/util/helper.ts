@@ -3,17 +3,15 @@
 import * as Pulsar from 'pulsar-client';
 import { POCConfig } from './interfaces';
 // Way to get nack based on % 2
-export async function mock_nack(
-  message: Pulsar.Message,
-  max_redelivery: number,
-  ack_on_last_redelivery: boolean,
-  nack_odd: boolean
-): Promise<boolean> {
+export async function mock_nack(message: Pulsar.Message, config: POCConfig): Promise<boolean> {
   const split = message.getData().toString().split('-');
-  if (message.getRedeliveryCount() === max_redelivery && ack_on_last_redelivery) {
+  if (
+    message.getRedeliveryCount() === config.consumers.dead_letter.max_redelivery &&
+    config.consumers.mock.ack_on_last_redelivery
+  ) {
     return false;
   } else {
-    return nack_odd ? parseInt(split[split.length - 1], 10) % 2 !== 0 : true;
+    return config.consumers.mock.nack_odd ? parseInt(split[split.length - 1], 10) % 2 !== 0 : true;
   }
 }
 
@@ -78,35 +76,10 @@ export function mock_partition_key(): string {
   return `PK-${Math.round(Math.random() * partitions_number)}`;
 }
 
-export async function parse_print(config: POCConfig, consumer_name: string, message: Pulsar.Message): Promise<string> {
-  const redelivery_msg = `${
-    config.print.receive.redelivery_count
-      ? `\n=> Delivery count: ${message.getRedeliveryCount()}/${config.consumers.dead_letter.max_redelivery}`
-      : ''
-  }`;
-  const topic_msg = `${config.print.receive.topic ? `\n=> Topic name: ${message.getTopicName()}` : ''}`;
-
-  const partition_key_msg = `${
-    message.getPartitionKey() !== '' && config.print.receive.partitions
-      ? `\n=> Partition key: ${message.getPartitionKey()}`
-      : ''
-  }`;
-
-  const message_id_msg = `${config.print.receive.msg_id ? `\n=> MessageId: ${message.getMessageId()}` : ''}`;
-
-  const publish_timestamp = `${
-    config.print.receive.publish_timestamp ? `\n=> PublishTimestamp: ${message.getPublishTimestamp()}` : ''
-  }`;
-
-  const event_timestamp = `${
-    config.print.receive.event_timestamp ? `\n=> EventTimestamp: ${message.getEventTimestamp()}` : ''
-  }`;
-  const properties = `${
-    config.print.receive.event_timestamp ? `\n=> Properties: ${JSON.stringify(message.getProperties())}` : ''
-  }`;
-
-  return `[${consumer_name}] -- Handling message: ${message
-    .getData()
-    // eslint-disable-next-line max-len
-    .toString()}${redelivery_msg}${topic_msg}${partition_key_msg}${message_id_msg}${publish_timestamp}${event_timestamp}${properties}`;
+export function print_error(e: unknown, function_name?: string): void {
+  if (e instanceof Error) {
+    print_err(e.message, function_name);
+  } else {
+    console.error(e, function_name);
+  }
 }

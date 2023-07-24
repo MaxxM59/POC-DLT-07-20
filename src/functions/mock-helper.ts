@@ -1,4 +1,4 @@
-import { print_err, print } from '../util/helper';
+import { print, print_error } from '../util/helper';
 import { POCConfig, SeededConsumer } from '../util/interfaces';
 import { create_consumer } from './seed';
 import * as Pulsar from 'pulsar-client';
@@ -7,7 +7,6 @@ const MOCK_ADD_CONSUMER = 'MOCK ADD CONSUMER';
 const UNSUB_FIRST_CONSUMER = 'UNSUB FIRST CONSUMER';
 const CLOSE_FIRST_CONSUMER = 'CLOSE FIRST CONSUMER';
 const RESUB_FIRST_CONSUMER = 'RESUB FIRST CONSUMER';
-const MOCK_FAILOVER = 'MOCK FAILOVER';
 
 export async function add_consumer(
   client: Pulsar.Client,
@@ -28,12 +27,8 @@ export async function add_consumer(
     );
     return consumers;
   } catch (e) {
-    if (e instanceof Error) {
-      print_err(e.message, MOCK_ADD_CONSUMER);
-      throw e;
-    } else {
-      throw e;
-    }
+    print_error(e, MOCK_ADD_CONSUMER);
+    throw e;
   }
 }
 
@@ -45,12 +40,8 @@ export async function unsub_first_consumer(config: POCConfig, consumers: SeededC
       UNSUB_FIRST_CONSUMER
     );
   } catch (e) {
-    if (e instanceof Error) {
-      print_err(e.message, UNSUB_FIRST_CONSUMER);
-      throw e;
-    } else {
-      throw e;
-    }
+    print_error(e, UNSUB_FIRST_CONSUMER);
+    throw e;
   }
 }
 export async function close_first_consumer(config: POCConfig, consumers: SeededConsumer[]): Promise<void> {
@@ -61,12 +52,8 @@ export async function close_first_consumer(config: POCConfig, consumers: SeededC
   );
   try {
   } catch (e) {
-    if (e instanceof Error) {
-      print_err(e.message, CLOSE_FIRST_CONSUMER);
-      throw e;
-    } else {
-      throw e;
-    }
+    print_error(e, CLOSE_FIRST_CONSUMER);
+    throw e;
   }
 }
 
@@ -85,35 +72,7 @@ export async function resub_first_consumer(
       RESUB_FIRST_CONSUMER
     );
   } catch (e) {
-    if (e instanceof Error) {
-      print_err(e.message, RESUB_FIRST_CONSUMER);
-      throw e;
-    } else {
-      throw e;
-    }
-  }
-}
-
-export async function mock_failover(
-  client: Pulsar.Client,
-  config: POCConfig,
-  consumers: SeededConsumer[],
-  half: boolean
-): Promise<SeededConsumer[]> {
-  try {
-    consumers = await add_consumer(client, config, consumers, half);
-    await unsub_first_consumer(config, consumers);
-
-    await resub_first_consumer(client, config, consumers, true);
-    await consumers[consumers.length - 1].consumer.unsubscribe();
-    print(`Mocked failover`, MOCK_FAILOVER);
-    return consumers;
-  } catch (e) {
-    if (e instanceof Error) {
-      print_err(e.message, MOCK_FAILOVER);
-      throw e;
-    } else {
-      throw e;
-    }
+    print_error(e, RESUB_FIRST_CONSUMER);
+    throw e;
   }
 }

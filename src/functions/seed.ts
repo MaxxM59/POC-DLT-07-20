@@ -8,7 +8,6 @@ const CREATE_PRODUCER = 'Create producer';
 
 const CREATE_CONSUMER = 'Create consumer';
 
-// Init pulsar client
 export async function init_client(): Promise<Pulsar.Client> {
   return new Pulsar.Client({
     serviceUrl: 'pulsar://localhost:6650',
@@ -16,7 +15,6 @@ export async function init_client(): Promise<Pulsar.Client> {
   });
 }
 
-// Create producer
 export async function create_producer(client: Pulsar.Client, config: POCConfig): Promise<Pulsar.Producer> {
   const producer_name = 'POC-producer';
   print(`Creating producer ${producer_name}`, CREATE_PRODUCER);
@@ -56,16 +54,11 @@ export async function create_consumer(
   try {
     print(`Creating consumer ${consumer_name}`, CREATE_CONSUMER);
 
-    // const sub_name = `POC-subscription-${consumer_name}`;
-    //const split = consumer_name.split('-');
-
-    // const topic_name = `${config.topic_name}-partition-${split[split.length - 1]}`;
-
     const consumer = await client.subscribe({
       ackTimeoutMs: config.consumers.ack_timeout,
       nAckRedeliverTimeoutMs: config.consumers.nack_timeout,
       topic: config.topic_name,
-      subscription: 'POC-subscription',
+      subscription: config.consumers.subscription,
       subscriptionType: config.consumers.sub_type,
       subscriptionInitialPosition: config.consumers.intial_position,
       deadLetterPolicy: {
@@ -73,7 +66,6 @@ export async function create_consumer(
         maxRedeliverCount: config.consumers.dead_letter.max_redelivery,
         initialSubscriptionName: `${config.consumers.dead_letter.dlq_topic_name}-sub`,
       },
-
       // eslint-disable-next-line @typescript-eslint/no-misused-promises
       listener: async (message, consumer): Promise<void> => {
         if (config.print.receive.partitions) {
@@ -84,7 +76,7 @@ export async function create_consumer(
     });
 
     print(`Successfully created consumer ${consumer_name}`, CREATE_CONSUMER);
-    return { name: consumer_name, sub_name: 'POC-subscription', consumer: consumer };
+    return { name: consumer_name, consumer: consumer };
   } catch (e) {
     print_err(`Failed to create consumer ${consumer_name} :  ${e}`, CREATE_CONSUMER);
     throw e;
